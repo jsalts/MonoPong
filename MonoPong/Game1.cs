@@ -104,8 +104,18 @@ namespace MonoPong
                 _ballPosition.X -= 1;
             if (_ballPosition.X > this.GraphicsDevice.Viewport.Width - 100)
                 _direction = 0;
+            if (_ballPosition.X == _playerPaddlePosition.X + 20)
+            {
+                if (_ballPosition.Y > _playerPaddlePosition.Y && _ballPosition.Y < _playerPaddlePosition.Y + 100)
+                    _direction = 1;
+                if (_ballPosition.Y + 100 > _playerPaddlePosition.Y && _ballPosition.Y + 100 < _playerPaddlePosition.Y + 100)
+                    _direction = 1;
+            }
+
             if (_ballPosition.X < 0)
-                _direction = 1;
+                Exit();
+            if (_ballPosition.X > this.GraphicsDevice.Viewport.Width)
+                Exit();
         }
 
         private void HandleKeystrokes()
