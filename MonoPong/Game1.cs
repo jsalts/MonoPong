@@ -10,16 +10,23 @@ namespace MonoPong
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
-        Texture2D ball;
-        Vector2 position;
+        SpriteBatch ballSprite;
+        SpriteBatch playerPaddleSprite;
+        SpriteBatch AIPaddleSprite;
+        Texture2D ballTexture;
+        Texture2D paddleTexture;
+        Vector2 ballPosition;
+        Vector2 playerPaddlePosition;
+        Vector2 AIPaddlePosition;
         int direction;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            position = new Vector2(0, 100);
+            ballPosition = new Vector2(0, 100);
+            playerPaddlePosition = new Vector2(10, 20);
+            AIPaddlePosition = new Vector2(750, 70);
         }
 
         /// <summary>
@@ -31,14 +38,22 @@ namespace MonoPong
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            ball = new Texture2D(this.GraphicsDevice, 100, 100);
-            Color[] colorData = new Color[100 * 100];
+            ballTexture = new Texture2D(this.GraphicsDevice, 100, 100);
+            Color[] ballColorData = new Color[100 * 100];
             for (int i = 0; i < 10000; i++)
             {
-                colorData[i] = Color.White;
+                ballColorData[i] = Color.White;
             }   
+            ballTexture.SetData<Color>(ballColorData);
 
-            ball.SetData<Color>(colorData);
+            paddleTexture = new Texture2D(this.GraphicsDevice, 20, 100);
+            Color[] paddleColorData = new Color[20 * 100];
+            for (int i = 0; i < 2000; i++)
+            {
+                paddleColorData[i] = Color.White;
+            }
+            paddleTexture.SetData<Color>(paddleColorData);
+
             base.Initialize();
 
             direction = 1;
@@ -51,7 +66,9 @@ namespace MonoPong
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            ballSprite = new SpriteBatch(GraphicsDevice);
+            playerPaddleSprite = new SpriteBatch(GraphicsDevice);
+            AIPaddleSprite = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -77,12 +94,12 @@ namespace MonoPong
 
             // TODO: Add your update logic here
             if (direction == 1)
-                position.X += 1;
+                ballPosition.X += 1;
             else
-                position.X -= 1;
-            if (position.X > this.GraphicsDevice.Viewport.Width-100)
+                ballPosition.X -= 1;
+            if (ballPosition.X > this.GraphicsDevice.Viewport.Width-100)
                 direction = 0;
-            if (position.X < 0)
+            if (ballPosition.X < 0)
                 direction = 1;
             base.Update(gameTime);
         }
@@ -96,9 +113,15 @@ namespace MonoPong
             GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
-            spriteBatch.Begin();
-            spriteBatch.Draw(ball, position, Color.White);
-            spriteBatch.End();
+            ballSprite.Begin();
+            ballSprite.Draw(ballTexture, ballPosition, Color.White);
+            ballSprite.End();
+            playerPaddleSprite.Begin();
+            playerPaddleSprite.Draw(paddleTexture, playerPaddlePosition, Color.White);
+            playerPaddleSprite.End();
+            AIPaddleSprite.Begin();
+            AIPaddleSprite.Draw(paddleTexture, AIPaddlePosition, Color.White);
+            AIPaddleSprite.End();
             base.Draw(gameTime);
         }
     }
