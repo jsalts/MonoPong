@@ -224,9 +224,9 @@ namespace MonoPong
                     if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 5 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + 5 - (_gameSpeed * _ballSpeed.X))
                     {
                         if (_ballPosition.Y > _playerPaddle.GetY() + 25 && _ballPosition.Y < _playerPaddle.GetY() + 25 + 50)
-                            _ballSpeed.X = _ballSpeed.X * -1.5f;
+                            _ballSpeed.X = _ballSpeed.X * -2f;
                         if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 25 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 25 + 50)
-                            _ballSpeed.X = _ballSpeed.X * -1.5f;
+                            _ballSpeed.X = _ballSpeed.X * -2f;
                     }
                 }
                 _playerBoostState++;
@@ -239,9 +239,9 @@ namespace MonoPong
                     if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth +_boost1Width + _boost2Width + 10 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 10 - (_gameSpeed * _ballSpeed.X))
                     {
                         if (_ballPosition.Y > _playerPaddle.GetY() + 40 && _ballPosition.Y < _playerPaddle.GetY() + 40 + 25)
-                            _ballSpeed.X = _ballSpeed.X * -2f;
+                            _ballSpeed.X = _ballSpeed.X * -3f;
                         if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 40 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 40 + 25)
-                            _ballSpeed.X = _ballSpeed.X * -2f;
+                            _ballSpeed.X = _ballSpeed.X * -3f;
                     }
                 }
                 _playerBoostState++;
