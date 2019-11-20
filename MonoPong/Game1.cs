@@ -11,14 +11,15 @@ namespace MonoPong
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        Texture2D texture;
+        Texture2D ball;
         Vector2 position;
+        int direction;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            position = new Vector2(0, 0);
+            position = new Vector2(0, 100);
         }
 
         /// <summary>
@@ -30,15 +31,17 @@ namespace MonoPong
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            texture = new Texture2D(this.GraphicsDevice, 100, 100);
+            ball = new Texture2D(this.GraphicsDevice, 100, 100);
             Color[] colorData = new Color[100 * 100];
             for (int i = 0; i < 10000; i++)
             {
-                colorData[i] = Color.CornflowerBlue;
+                colorData[i] = Color.White;
             }   
 
-            texture.SetData<Color>(colorData);
+            ball.SetData<Color>(colorData);
             base.Initialize();
+
+            direction = 1;
         }
 
         /// <summary>
@@ -73,9 +76,14 @@ namespace MonoPong
                 Exit();
 
             // TODO: Add your update logic here
-            position.X += 1;
-            if (position.X > this.GraphicsDevice.Viewport.Width)
-                position.X = 0;
+            if (direction == 1)
+                position.X += 1;
+            else
+                position.X -= 1;
+            if (position.X > this.GraphicsDevice.Viewport.Width-100)
+                direction = 0;
+            if (position.X < 0)
+                direction = 1;
             base.Update(gameTime);
         }
 
@@ -85,11 +93,11 @@ namespace MonoPong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Red);
+            GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
             spriteBatch.Begin();
-            spriteBatch.Draw(texture, position, Color.CornflowerBlue);
+            spriteBatch.Draw(ball, position, Color.White);
             spriteBatch.End();
             base.Draw(gameTime);
         }
