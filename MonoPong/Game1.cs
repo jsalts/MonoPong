@@ -44,7 +44,16 @@ namespace MonoPong
 
     public class Game1 : Game
     {
-        private float _gameSpeed = 3f;
+        private float _gameSpeed = 2f;
+
+        private int _ballSize = 50;
+        private int _boost1Width = 12;
+        private int _boost2Width = 10;
+        private int _boost1Height = 50;
+        private int _boost2Height = 20;
+        private int _paddleWidth = 20;
+        private int _paddleHeight = 100;
+
         GraphicsDeviceManager _graphics;
         SpriteBatch _ballSprite;
         SpriteBatch _playerPaddleSprite;
@@ -57,10 +66,11 @@ namespace MonoPong
         Texture2D _boost2Texture;
         Vector2 _ballPosition;
         Vector2 _ballSpeed;
-        int _ballSize;
         Paddle _playerPaddle;
         Paddle _aiPaddle;
         int _playerBoostState;
+        private int _boost1Offset;
+        private int _boost2Offset;
 
         public Game1()
         {
@@ -80,15 +90,9 @@ namespace MonoPong
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            _ballSize = 50;
 
             _ballTexture = new Texture2D(this.GraphicsDevice, _ballSize, _ballSize);
-            Color[] ballColorData = new Color[_ballSize * _ballSize];
-            for (int i = 0; i < _ballSize * _ballSize; i++)
-            {
-                ballColorData[i] = Color.White;
-            }   
-            _ballTexture.SetData(ballColorData);
+            ColorBall(Color.White);
 
             _paddleTexture = new Texture2D(this.GraphicsDevice, 20, 100);
             Color[] paddleColorData = new Color[20 * 100];
@@ -98,17 +102,17 @@ namespace MonoPong
             }
             _paddleTexture.SetData(paddleColorData);
 
-            _boost1Texture = new Texture2D(this.GraphicsDevice, 12, 50);
-            Color[] boost1ColorData = new Color[12 * 50];
-            for (int i = 0; i < 12*50; i++)
+            _boost1Texture = new Texture2D(this.GraphicsDevice, _boost1Width, _boost1Height);
+            Color[] boost1ColorData = new Color[_boost1Width * _boost1Height];
+            for (int i = 0; i < _boost1Width*_boost1Height; i++)
             {
                 boost1ColorData[i] = Color.Blue;
             }
             _boost1Texture.SetData(boost1ColorData);
 
-            _boost2Texture = new Texture2D(this.GraphicsDevice, 10, 20);
-            Color[] boost2ColorData = new Color[10 * 20];
-            for (int i = 0; i < 10 * 20; i++)
+            _boost2Texture = new Texture2D(this.GraphicsDevice, _boost2Width, _boost2Height);
+            Color[] boost2ColorData = new Color[_boost2Width * _boost2Height];
+            for (int i = 0; i < _boost2Width * _boost2Height; i++)
             {
                 boost2ColorData[i] = Color.CornflowerBlue;
             }
@@ -118,6 +122,8 @@ namespace MonoPong
 
             _ballSpeed = new Vector2(1, 1);
             _playerBoostState = 0;
+            _boost1Offset = (_paddleHeight - _boost1Height) / 2;
+            _boost2Offset = (_paddleHeight - _boost2Height) / 2;
         }
 
         /// <summary>
@@ -167,19 +173,19 @@ namespace MonoPong
             _ballPosition.Y += _ballSpeed.Y * _gameSpeed;
 
             //Check for right player paddle collision
-            if (_ballPosition.X + _ballSize >= _aiPaddle.GetX() && _ballPosition.X + _ballSize < _aiPaddle.GetX() + _gameSpeed + _ballSpeed.X)
+            if (_ballPosition.X + _ballSize >= _aiPaddle.GetX() && _ballPosition.X + _ballSize < _aiPaddle.GetX() + (_gameSpeed * _ballSpeed.X))
             {
-                if (_ballPosition.Y > _aiPaddle.GetY() && _ballPosition.Y < _aiPaddle.GetY() + 100)
+                if (_ballPosition.Y > _aiPaddle.GetY() && _ballPosition.Y < _aiPaddle.GetY() + _paddleHeight)
                     _ballSpeed.X = -1;
-                if (_ballPosition.Y + _ballSize > _aiPaddle.GetY() && _ballPosition.Y + _ballSize < _aiPaddle.GetY() + 100)
+                if (_ballPosition.Y + _ballSize > _aiPaddle.GetY() && _ballPosition.Y + _ballSize < _aiPaddle.GetY() + _paddleHeight)
                     _ballSpeed.X = -1;
             }
             //Check for left player paddle collision
-            if (_ballPosition.X <= _playerPaddle.GetX() + 20 && _ballPosition.X > (_playerPaddle.GetX() + 20 - _gameSpeed -_ballSpeed.X))
+            if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + (_gameSpeed * _ballSpeed.X))
             {
-                if (_ballPosition.Y > _playerPaddle.GetY() && _ballPosition.Y < _playerPaddle.GetY() + 100)
+                if (_ballPosition.Y > _playerPaddle.GetY() && _ballPosition.Y < _playerPaddle.GetY() + _paddleHeight)
                     _ballSpeed.X = 1;
-                if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 100)
+                if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + _paddleHeight)
                     _ballSpeed.X = 1;
             }
             //Check for bottom collision
@@ -193,37 +199,56 @@ namespace MonoPong
                 Exit();
             if (_ballPosition.X + _ballSize > this.GraphicsDevice.Viewport.Width)
                 //Exit();
-                _ballSpeed.X = -1;
+                _ballSpeed.X = _ballSpeed.X * -1;
+
+            //Update Ball Color
+            if (_ballSpeed.X > 2 || _ballSpeed.X < -2)
+                ColorBall(Color.Red);
+            else if (_ballSpeed.X > 1 || _ballSpeed.X < -1)
+                ColorBall(Color.Yellow);
+            else
+                ColorBall(Color.White);
         }
 
         private void PlayerBoost()
         {
             if (_playerBoostState == 0)
                 return;
+            //Increment Boost Cooldown Timer
+            if (_playerBoostState < 0)
+                _playerBoostState++;
+            //Boost 1 Interaction
             if (_playerBoostState > 0)
             {
-                if (_ballPosition.X <= _playerPaddle.GetX() + 25 + 12 && _ballPosition.X > (_playerPaddle.GetX() + 25 - _gameSpeed - _ballSpeed.X))
-                {
-                    if (_ballPosition.Y > _playerPaddle.GetY() + 25 && _ballPosition.Y < _playerPaddle.GetY() + 25 + 50)
-                        _ballSpeed.X = _ballSpeed.X * -1.5f;
-                    if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 25 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 25 + 50)
-                        _ballSpeed.X = _ballSpeed.X * -1.5f;
+                if ( _ballSpeed.X < 0 ) { 
+                    if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 5 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + 5 - (_gameSpeed * _ballSpeed.X))
+                    {
+                        if (_ballPosition.Y > _playerPaddle.GetY() + 25 && _ballPosition.Y < _playerPaddle.GetY() + 25 + 50)
+                            _ballSpeed.X = _ballSpeed.X * -1.5f;
+                        if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 25 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 25 + 50)
+                            _ballSpeed.X = _ballSpeed.X * -1.5f;
+                    }
                 }
                 _playerBoostState++;
             }
+            //Boost 2 Interaction
             if (_playerBoostState > 5)
             {
-                if (_ballPosition.X <= _playerPaddle.GetX() + 40 + 10 && _ballPosition.X > (_playerPaddle.GetX() + 40 - _gameSpeed - _ballSpeed.X))
+                if (_ballSpeed.X < 0)
                 {
-                    if (_ballPosition.Y > _playerPaddle.GetY() + 40 && _ballPosition.Y < _playerPaddle.GetY() + 40 + 25)
-                        _ballSpeed.X = _ballSpeed.X * -2f;
-                    if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 40 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 40 + 25)
-                        _ballSpeed.X = _ballSpeed.X * -2f;
+                    if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth +_boost1Width + _boost2Width + 10 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 10 - (_gameSpeed * _ballSpeed.X))
+                    {
+                        if (_ballPosition.Y > _playerPaddle.GetY() + 40 && _ballPosition.Y < _playerPaddle.GetY() + 40 + 25)
+                            _ballSpeed.X = _ballSpeed.X * -2f;
+                        if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 40 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 40 + 25)
+                            _ballSpeed.X = _ballSpeed.X * -2f;
+                    }
                 }
                 _playerBoostState++;
             }
+            //Activate Boost Cooldown
             if (_playerBoostState > 10)
-                _playerBoostState = 0;
+                _playerBoostState = -100;
         }
 
         private void HandleKeystrokes()
@@ -240,8 +265,19 @@ namespace MonoPong
                 _playerPaddle.MovePaddle(1 * _gameSpeed);
             if (Keyboard.GetState().IsKeyDown(Keys.OemComma) || Keyboard.GetState().IsKeyDown(Keys.W))
                 _playerPaddle.MovePaddle(-1 * _gameSpeed);
-            if (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D))
+            if (_playerBoostState == 0 && (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D)))
                 _playerBoostState = 1;
+        }
+
+        private void ColorBall(Color color)
+        {
+            Color[] ballColorData = new Color[_ballSize * _ballSize];
+            for (int i = 0; i < _ballSize * _ballSize; i++)
+            {
+                ballColorData[i] = color;
+            }
+            _ballTexture.SetData(ballColorData);
+
         }
 
         /// <summary>
@@ -264,14 +300,16 @@ namespace MonoPong
             _aiPaddleSprite.End();
             if (_playerBoostState > 4)
             {
+                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 10, _playerPaddle.GetY() + _boost2Offset);
                 _playerBoost1Sprite.Begin();
-                _playerBoost1Sprite.Draw(_boost2Texture, new Vector2(_playerPaddle.GetX() + 40, _playerPaddle.GetY() + 40), Color.White);
+                _playerBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
                 _playerBoost1Sprite.End();
             }
             else if (_playerBoostState > 0)
             {
+                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 5, _playerPaddle.GetY() + _boost1Offset);
                 _playerBoost2Sprite.Begin();
-                _playerBoost2Sprite.Draw(_boost1Texture, new Vector2(_playerPaddle.GetX() + 25, _playerPaddle.GetY() + 25), Color.White);
+                _playerBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
                 _playerBoost2Sprite.End();
             }
             base.Draw(gameTime);
