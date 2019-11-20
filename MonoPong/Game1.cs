@@ -24,8 +24,8 @@ namespace MonoPong
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            _ballPosition = new Vector2(0, 100);
-            _playerPaddlePosition = new Vector2(10, 20);
+            _ballPosition = new Vector2(50, 100);
+            _playerPaddlePosition = new Vector2(30, 20);
             _aiPaddlePosition = new Vector2(750, 70);
         }
 
@@ -98,12 +98,21 @@ namespace MonoPong
 
         private void DetermineBallPosition()
         {
+            //Move ball
             if (_direction == 1)
                 _ballPosition.X += 1;
             else
                 _ballPosition.X -= 1;
-            if (_ballPosition.X > this.GraphicsDevice.Viewport.Width - 100)
-                _direction = 0;
+
+            //Check for right player paddle collision
+            if (_ballPosition.X+100 == _aiPaddlePosition.X)
+            {
+                if (_ballPosition.Y > _aiPaddlePosition.Y && _ballPosition.Y < _aiPaddlePosition.Y + 100)
+                    _direction = 0;
+                if (_ballPosition.Y + 100 > _aiPaddlePosition.Y && _ballPosition.Y + 100 < _aiPaddlePosition.Y + 100)
+                    _direction = 0;
+            }
+            //Check for left player paddle collision
             if (_ballPosition.X == _playerPaddlePosition.X + 20)
             {
                 if (_ballPosition.Y > _playerPaddlePosition.Y && _ballPosition.Y < _playerPaddlePosition.Y + 100)
@@ -112,9 +121,10 @@ namespace MonoPong
                     _direction = 1;
             }
 
+            //Check for game over
             if (_ballPosition.X < 0)
                 Exit();
-            if (_ballPosition.X > this.GraphicsDevice.Viewport.Width)
+            if (_ballPosition.X+100 > this.GraphicsDevice.Viewport.Width)
                 Exit();
         }
 
