@@ -49,13 +49,18 @@ namespace MonoPong
         SpriteBatch _ballSprite;
         SpriteBatch _playerPaddleSprite;
         SpriteBatch _aiPaddleSprite;
+        SpriteBatch _playerBoost1Sprite;
+        SpriteBatch _playerBoost2Sprite;
         Texture2D _ballTexture;
         Texture2D _paddleTexture;
+        Texture2D _boost1Texture;
+        Texture2D _boost2Texture;
         Vector2 _ballPosition;
         Vector2 _ballSpeed;
         int _ballSize;
         Paddle _playerPaddle;
         Paddle _aiPaddle;
+        int _playerBoostState;
 
         public Game1()
         {
@@ -93,9 +98,26 @@ namespace MonoPong
             }
             _paddleTexture.SetData(paddleColorData);
 
+            _boost1Texture = new Texture2D(this.GraphicsDevice, 12, 50);
+            Color[] boost1ColorData = new Color[12 * 50];
+            for (int i = 0; i < 12*50; i++)
+            {
+                boost1ColorData[i] = Color.Blue;
+            }
+            _boost1Texture.SetData(boost1ColorData);
+
+            _boost2Texture = new Texture2D(this.GraphicsDevice, 10, 20);
+            Color[] boost2ColorData = new Color[10 * 20];
+            for (int i = 0; i < 10 * 20; i++)
+            {
+                boost2ColorData[i] = Color.CornflowerBlue;
+            }
+            _boost2Texture.SetData(boost2ColorData);
+
             base.Initialize();
 
             _ballSpeed = new Vector2(1, 1);
+            _playerBoostState = 0;
         }
 
         /// <summary>
@@ -108,6 +130,8 @@ namespace MonoPong
             _ballSprite = new SpriteBatch(GraphicsDevice);
             _playerPaddleSprite = new SpriteBatch(GraphicsDevice);
             _aiPaddleSprite = new SpriteBatch(GraphicsDevice);
+            _playerBoost1Sprite = new SpriteBatch(GraphicsDevice);
+            _playerBoost2Sprite = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -131,6 +155,7 @@ namespace MonoPong
             HandleKeystrokes();
 
             DetermineBallPosition();
+            PlayerBoost();
             
             base.Update(gameTime);
         }
@@ -142,7 +167,7 @@ namespace MonoPong
             _ballPosition.Y += _ballSpeed.Y * _gameSpeed;
 
             //Check for right player paddle collision
-            if (_ballPosition.X + _ballSize >= _aiPaddle.GetX() && _ballPosition.X + _ballSize < _aiPaddle.GetX() + _gameSpeed)
+            if (_ballPosition.X + _ballSize >= _aiPaddle.GetX() && _ballPosition.X + _ballSize < _aiPaddle.GetX() + _gameSpeed + _ballSpeed.X)
             {
                 if (_ballPosition.Y > _aiPaddle.GetY() && _ballPosition.Y < _aiPaddle.GetY() + 100)
                     _ballSpeed.X = -1;
@@ -150,7 +175,7 @@ namespace MonoPong
                     _ballSpeed.X = -1;
             }
             //Check for left player paddle collision
-            if (_ballPosition.X <= _playerPaddle.GetX() + 20 && _ballPosition.X > (_playerPaddle.GetX() + 20 - _gameSpeed))
+            if (_ballPosition.X <= _playerPaddle.GetX() + 20 && _ballPosition.X > (_playerPaddle.GetX() + 20 - _gameSpeed -_ballSpeed.X))
             {
                 if (_ballPosition.Y > _playerPaddle.GetY() && _ballPosition.Y < _playerPaddle.GetY() + 100)
                     _ballSpeed.X = 1;
@@ -167,22 +192,56 @@ namespace MonoPong
             if (_ballPosition.X < 0)
                 Exit();
             if (_ballPosition.X + _ballSize > this.GraphicsDevice.Viewport.Width)
-                Exit();
+                //Exit();
+                _ballSpeed.X = -1;
+        }
+
+        private void PlayerBoost()
+        {
+            if (_playerBoostState == 0)
+                return;
+            if (_playerBoostState > 0)
+            {
+                if (_ballPosition.X <= _playerPaddle.GetX() + 25 + 12 && _ballPosition.X > (_playerPaddle.GetX() + 25 - _gameSpeed - _ballSpeed.X))
+                {
+                    if (_ballPosition.Y > _playerPaddle.GetY() + 25 && _ballPosition.Y < _playerPaddle.GetY() + 25 + 50)
+                        _ballSpeed.X = _ballSpeed.X * -1.5f;
+                    if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 25 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 25 + 50)
+                        _ballSpeed.X = _ballSpeed.X * -1.5f;
+                }
+                _playerBoostState++;
+            }
+            if (_playerBoostState > 5)
+            {
+                if (_ballPosition.X <= _playerPaddle.GetX() + 40 + 10 && _ballPosition.X > (_playerPaddle.GetX() + 40 - _gameSpeed - _ballSpeed.X))
+                {
+                    if (_ballPosition.Y > _playerPaddle.GetY() + 40 && _ballPosition.Y < _playerPaddle.GetY() + 40 + 25)
+                        _ballSpeed.X = _ballSpeed.X * -2f;
+                    if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 40 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 40 + 25)
+                        _ballSpeed.X = _ballSpeed.X * -2f;
+                }
+                _playerBoostState++;
+            }
+            if (_playerBoostState > 10)
+                _playerBoostState = 0;
         }
 
         private void HandleKeystrokes()
         {
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) 
                 Exit();
-            
+            //Control AI paddle
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
                 _aiPaddle.MovePaddle(1 * _gameSpeed);
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 _aiPaddle.MovePaddle(-1 * _gameSpeed);
+            //Control Player Paddle
             if (Keyboard.GetState().IsKeyDown(Keys.O) || Keyboard.GetState().IsKeyDown(Keys.S))
                 _playerPaddle.MovePaddle(1 * _gameSpeed);
             if (Keyboard.GetState().IsKeyDown(Keys.OemComma) || Keyboard.GetState().IsKeyDown(Keys.W))
                 _playerPaddle.MovePaddle(-1 * _gameSpeed);
+            if (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D))
+                _playerBoostState = 1;
         }
 
         /// <summary>
@@ -203,6 +262,18 @@ namespace MonoPong
             _aiPaddleSprite.Begin();
             _aiPaddleSprite.Draw(_paddleTexture, _aiPaddle.GetPosition(), Color.White);
             _aiPaddleSprite.End();
+            if (_playerBoostState > 4)
+            {
+                _playerBoost1Sprite.Begin();
+                _playerBoost1Sprite.Draw(_boost2Texture, new Vector2(_playerPaddle.GetX() + 40, _playerPaddle.GetY() + 40), Color.White);
+                _playerBoost1Sprite.End();
+            }
+            else if (_playerBoostState > 0)
+            {
+                _playerBoost2Sprite.Begin();
+                _playerBoost2Sprite.Draw(_boost1Texture, new Vector2(_playerPaddle.GetX() + 25, _playerPaddle.GetY() + 25), Color.White);
+                _playerBoost2Sprite.End();
+            }
             base.Draw(gameTime);
         }
     }
