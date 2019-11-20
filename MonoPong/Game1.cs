@@ -91,8 +91,11 @@ namespace MonoPong
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Down))
+                playerPaddlePosition.Y += 1;
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Up))
+                playerPaddlePosition.Y -= 1;
 
-            // TODO: Add your update logic here
             if (direction == 1)
                 ballPosition.X += 1;
             else
