@@ -11,11 +11,14 @@ namespace MonoPong
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        
+        Texture2D texture;
+        Vector2 position;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            position = new Vector2(0, 0);
         }
 
         /// <summary>
@@ -27,7 +30,14 @@ namespace MonoPong
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            texture = new Texture2D(this.GraphicsDevice, 100, 100);
+            Color[] colorData = new Color[100 * 100];
+            for (int i = 0; i < 10000; i++)
+            {
+                colorData[i] = Color.CornflowerBlue;
+            }   
 
+            texture.SetData<Color>(colorData);
             base.Initialize();
         }
 
@@ -63,7 +73,9 @@ namespace MonoPong
                 Exit();
 
             // TODO: Add your update logic here
-
+            position.X += 1;
+            if (position.X > this.GraphicsDevice.Viewport.Width)
+                position.X = 0;
             base.Update(gameTime);
         }
 
@@ -76,7 +88,9 @@ namespace MonoPong
             GraphicsDevice.Clear(Color.Red);
 
             // TODO: Add your drawing code here
-
+            spriteBatch.Begin();
+            spriteBatch.Draw(texture, position, Color.CornflowerBlue);
+            spriteBatch.End();
             base.Draw(gameTime);
         }
     }
