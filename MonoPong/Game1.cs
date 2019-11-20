@@ -53,6 +53,7 @@ namespace MonoPong
         Texture2D _paddleTexture;
         Vector2 _ballPosition;
         Vector2 _ballSpeed;
+        int _ballSize;
         Paddle _playerPaddle;
         Paddle _aiPaddle;
 
@@ -74,9 +75,11 @@ namespace MonoPong
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            _ballTexture = new Texture2D(this.GraphicsDevice, 100, 100);
-            Color[] ballColorData = new Color[100 * 100];
-            for (int i = 0; i < 10000; i++)
+            _ballSize = 50;
+
+            _ballTexture = new Texture2D(this.GraphicsDevice, _ballSize, _ballSize);
+            Color[] ballColorData = new Color[_ballSize * _ballSize];
+            for (int i = 0; i < _ballSize * _ballSize; i++)
             {
                 ballColorData[i] = Color.White;
             }   
@@ -92,7 +95,7 @@ namespace MonoPong
 
             base.Initialize();
 
-            _ballSpeed = new Vector2(1, 0);
+            _ballSpeed = new Vector2(1, 1);
         }
 
         /// <summary>
@@ -136,28 +139,34 @@ namespace MonoPong
         {
             //Move ball
             _ballPosition.X += _ballSpeed.X * _gameSpeed;
+            _ballPosition.Y += _ballSpeed.Y * _gameSpeed;
 
             //Check for right player paddle collision
-            if (_ballPosition.X+100 == _aiPaddle.GetX())
+            if (_ballPosition.X + _ballSize >= _aiPaddle.GetX() && _ballPosition.X + _ballSize < _aiPaddle.GetX() + _gameSpeed)
             {
                 if (_ballPosition.Y > _aiPaddle.GetY() && _ballPosition.Y < _aiPaddle.GetY() + 100)
                     _ballSpeed.X = -1;
-                if (_ballPosition.Y + 100 > _aiPaddle.GetY() && _ballPosition.Y + 100 < _aiPaddle.GetY() + 100)
+                if (_ballPosition.Y + _ballSize > _aiPaddle.GetY() && _ballPosition.Y + _ballSize < _aiPaddle.GetY() + 100)
                     _ballSpeed.X = -1;
             }
             //Check for left player paddle collision
-            if (_ballPosition.X == _playerPaddle.GetX() + 20)
+            if (_ballPosition.X <= _playerPaddle.GetX() + 20 && _ballPosition.X > (_playerPaddle.GetX() + 20 - _gameSpeed))
             {
                 if (_ballPosition.Y > _playerPaddle.GetY() && _ballPosition.Y < _playerPaddle.GetY() + 100)
                     _ballSpeed.X = 1;
-                if (_ballPosition.Y + 100 > _playerPaddle.GetY() && _ballPosition.Y + 100 < _playerPaddle.GetY() + 100)
+                if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 100)
                     _ballSpeed.X = 1;
             }
-
+            //Check for bottom collision
+            if (_ballPosition.Y + _ballSize > 480)
+                _ballSpeed.Y = -1;
+            //Check for top collision
+            if (_ballPosition.Y < 0)
+                _ballSpeed.Y = 1;
             //Check for game over
             if (_ballPosition.X < 0)
                 Exit();
-            if (_ballPosition.X+100 > this.GraphicsDevice.Viewport.Width)
+            if (_ballPosition.X + _ballSize > this.GraphicsDevice.Viewport.Width)
                 Exit();
         }
 
@@ -167,10 +176,8 @@ namespace MonoPong
                 Exit();
             
             if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                //_aiPaddlePosition.Y += 1 * _gameSpeed;
                 _aiPaddle.MovePaddle(1 * _gameSpeed);
             if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                //_aiPaddlePosition.Y -= 1 * _gameSpeed;
                 _aiPaddle.MovePaddle(-1 * _gameSpeed);
             if (Keyboard.GetState().IsKeyDown(Keys.O) || Keyboard.GetState().IsKeyDown(Keys.S))
                 _playerPaddle.MovePaddle(1 * _gameSpeed);
