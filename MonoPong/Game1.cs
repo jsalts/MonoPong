@@ -9,24 +9,24 @@ namespace MonoPong
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch ballSprite;
-        SpriteBatch playerPaddleSprite;
-        SpriteBatch AIPaddleSprite;
-        Texture2D ballTexture;
-        Texture2D paddleTexture;
-        Vector2 ballPosition;
-        Vector2 playerPaddlePosition;
-        Vector2 AIPaddlePosition;
-        int direction;
+        GraphicsDeviceManager _graphics;
+        SpriteBatch _ballSprite;
+        SpriteBatch _playerPaddleSprite;
+        SpriteBatch _aiPaddleSprite;
+        Texture2D _ballTexture;
+        Texture2D _paddleTexture;
+        Vector2 _ballPosition;
+        Vector2 _playerPaddlePosition;
+        Vector2 _aiPaddlePosition;
+        int _direction;
 
         public Game1()
         {
-            graphics = new GraphicsDeviceManager(this);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            ballPosition = new Vector2(0, 100);
-            playerPaddlePosition = new Vector2(10, 20);
-            AIPaddlePosition = new Vector2(750, 70);
+            _ballPosition = new Vector2(0, 100);
+            _playerPaddlePosition = new Vector2(10, 20);
+            _aiPaddlePosition = new Vector2(750, 70);
         }
 
         /// <summary>
@@ -38,25 +38,25 @@ namespace MonoPong
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
-            ballTexture = new Texture2D(this.GraphicsDevice, 100, 100);
+            _ballTexture = new Texture2D(this.GraphicsDevice, 100, 100);
             Color[] ballColorData = new Color[100 * 100];
             for (int i = 0; i < 10000; i++)
             {
                 ballColorData[i] = Color.White;
             }   
-            ballTexture.SetData<Color>(ballColorData);
+            _ballTexture.SetData(ballColorData);
 
-            paddleTexture = new Texture2D(this.GraphicsDevice, 20, 100);
+            _paddleTexture = new Texture2D(this.GraphicsDevice, 20, 100);
             Color[] paddleColorData = new Color[20 * 100];
             for (int i = 0; i < 2000; i++)
             {
                 paddleColorData[i] = Color.White;
             }
-            paddleTexture.SetData<Color>(paddleColorData);
+            _paddleTexture.SetData(paddleColorData);
 
             base.Initialize();
 
-            direction = 1;
+            _direction = 1;
         }
 
         /// <summary>
@@ -66,9 +66,9 @@ namespace MonoPong
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            ballSprite = new SpriteBatch(GraphicsDevice);
-            playerPaddleSprite = new SpriteBatch(GraphicsDevice);
-            AIPaddleSprite = new SpriteBatch(GraphicsDevice);
+            _ballSprite = new SpriteBatch(GraphicsDevice);
+            _playerPaddleSprite = new SpriteBatch(GraphicsDevice);
+            _aiPaddleSprite = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -89,22 +89,35 @@ namespace MonoPong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Down))
-                playerPaddlePosition.Y += 1;
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Up))
-                playerPaddlePosition.Y -= 1;
+            HandleKeystrokes();
 
-            if (direction == 1)
-                ballPosition.X += 1;
-            else
-                ballPosition.X -= 1;
-            if (ballPosition.X > this.GraphicsDevice.Viewport.Width-100)
-                direction = 0;
-            if (ballPosition.X < 0)
-                direction = 1;
+            DetermineBallPosition();
+            
             base.Update(gameTime);
+        }
+
+        private void DetermineBallPosition()
+        {
+            if (_direction == 1)
+                _ballPosition.X += 1;
+            else
+                _ballPosition.X -= 1;
+            if (_ballPosition.X > this.GraphicsDevice.Viewport.Width - 100)
+                _direction = 0;
+            if (_ballPosition.X < 0)
+                _direction = 1;
+        }
+
+        private void HandleKeystrokes()
+        {
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+                Keyboard.GetState().IsKeyDown(Keys.Escape))
+                Exit();
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+                Keyboard.GetState().IsKeyDown(Keys.Down))
+                _playerPaddlePosition.Y += 1;
+            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Up))
+                _playerPaddlePosition.Y -= 1;
         }
 
         /// <summary>
@@ -116,15 +129,15 @@ namespace MonoPong
             GraphicsDevice.Clear(Color.Black);
 
             // TODO: Add your drawing code here
-            ballSprite.Begin();
-            ballSprite.Draw(ballTexture, ballPosition, Color.White);
-            ballSprite.End();
-            playerPaddleSprite.Begin();
-            playerPaddleSprite.Draw(paddleTexture, playerPaddlePosition, Color.White);
-            playerPaddleSprite.End();
-            AIPaddleSprite.Begin();
-            AIPaddleSprite.Draw(paddleTexture, AIPaddlePosition, Color.White);
-            AIPaddleSprite.End();
+            _ballSprite.Begin();
+            _ballSprite.Draw(_ballTexture, _ballPosition, Color.White);
+            _ballSprite.End();
+            _playerPaddleSprite.Begin();
+            _playerPaddleSprite.Draw(_paddleTexture, _playerPaddlePosition, Color.White);
+            _playerPaddleSprite.End();
+            _aiPaddleSprite.Begin();
+            _aiPaddleSprite.Draw(_paddleTexture, _aiPaddlePosition, Color.White);
+            _aiPaddleSprite.End();
             base.Draw(gameTime);
         }
     }
