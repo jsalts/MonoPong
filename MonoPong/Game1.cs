@@ -9,6 +9,7 @@ namespace MonoPong
     /// </summary>
     public class Game1 : Game
     {
+        private float _gameSpeed = 3f;
         GraphicsDeviceManager _graphics;
         SpriteBatch _ballSprite;
         SpriteBatch _playerPaddleSprite;
@@ -100,9 +101,9 @@ namespace MonoPong
         {
             //Move ball
             if (_direction == 1)
-                _ballPosition.X += 1;
+                _ballPosition.X += 1 * _gameSpeed;
             else
-                _ballPosition.X -= 1;
+                _ballPosition.X -= 1 * _gameSpeed;
 
             //Check for right player paddle collision
             if (_ballPosition.X+100 == _aiPaddlePosition.X)
@@ -130,23 +131,18 @@ namespace MonoPong
 
         private void HandleKeystrokes()
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape)) 
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) 
                 Exit();
             
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Down))
-                _aiPaddlePosition.Y += 1;
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Up))
-                _aiPaddlePosition.Y -= 1;
+            if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                _aiPaddlePosition.Y += 1 * _gameSpeed;
+            if (Keyboard.GetState().IsKeyDown(Keys.Up))
+                _aiPaddlePosition.Y -= 1 * _gameSpeed;
             
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.S))
-                _playerPaddlePosition.Y += 1;
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.W))
-                _playerPaddlePosition.Y -= 1;
-            
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.O))
-                _playerPaddlePosition.Y += 1;
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.OemComma))
-                _playerPaddlePosition.Y -= 1;
+            if (Keyboard.GetState().IsKeyDown(Keys.O) || Keyboard.GetState().IsKeyDown(Keys.S))
+                _playerPaddlePosition.Y += 1 * _gameSpeed;
+            if (Keyboard.GetState().IsKeyDown(Keys.OemComma) || Keyboard.GetState().IsKeyDown(Keys.W))
+                _playerPaddlePosition.Y -= 1 * _gameSpeed;
         }
 
         /// <summary>
