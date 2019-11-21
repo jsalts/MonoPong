@@ -6,13 +6,13 @@ namespace MonoPong
 {
     public class Game1 : Game
     {
-        private float _gameSpeed = 10f;
+        private float _gameSpeed = 5f;
 
         private int _ballSize = 25;
         private int _boost1Width = 12;
         private int _boost2Width = 10;
         private int _boost1Height = 50;
-        private int _boost2Height = 20;
+        private int _boost2Height = 26;
         private int _paddleWidth = 20;
         private int _paddleHeight = 100;
 
@@ -39,7 +39,7 @@ namespace MonoPong
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _ballPosition = new Vector2(50, 100);
-            _playerPaddle = new Paddle(30,20);
+            _playerPaddle = new Paddle(30,300);
             _aiPaddle = new Paddle(750, 70);
         }
 
@@ -177,13 +177,13 @@ namespace MonoPong
             if (_playerBoostState == 0)
                 return;
             //Increment Boost Cooldown Timer
-            if (_playerBoostState < 0)
+            else if (_playerBoostState < 0)
                 _playerBoostState++;
             //Boost 1 Interaction
-            if (_playerBoostState > 0)
+            else if (_playerBoostState > 0 && _playerBoostState <= 10)
             {
                 if ( _ballSpeed.X < 0 ) { 
-                    if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 5 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + 5 - (_gameSpeed * _ballSpeed.X))
+                    if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + 4 - (_gameSpeed * _ballSpeed.X))
                     {
                         if (_ballPosition.Y > _playerPaddle.GetY() + _boost1Offset && _ballPosition.Y < _playerPaddle.GetY() + _boost1Offset + _boost1Height)
                             _ballSpeed.X = _ballSpeed.X * -2f;
@@ -194,11 +194,11 @@ namespace MonoPong
                 _playerBoostState++;
             }
             //Boost 2 Interaction
-            if (_playerBoostState > 5)
+            else if (_playerBoostState > 10 && _playerBoostState <= 20)
             {
                 if (_ballSpeed.X < 0)
                 {
-                    if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth +_boost1Width + _boost2Width + 10 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 10 - (_gameSpeed * _ballSpeed.X))
+                    if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth +_boost1Width + _boost2Width + 10 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 - (_gameSpeed * _ballSpeed.X))
                     {
                         if (_ballPosition.Y > _playerPaddle.GetY() + _boost2Offset && _ballPosition.Y < _playerPaddle.GetY() + _boost2Offset + _boost2Height)
                             _ballSpeed.X = _ballSpeed.X * -3f;
@@ -209,7 +209,7 @@ namespace MonoPong
                 _playerBoostState++;
             }
             //Activate Boost Cooldown
-            if (_playerBoostState > 10)
+            else if (_playerBoostState > 20)
                 _playerBoostState = -100;
         }
 
@@ -260,16 +260,18 @@ namespace MonoPong
             _aiPaddleSprite.Begin();
             _aiPaddleSprite.Draw(_paddleTexture, _aiPaddle.GetPosition(), Color.White);
             _aiPaddleSprite.End();
-            if (_playerBoostState > 4)
+            //Boost 2 display
+            if (_playerBoostState > 10)
             {
-                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 10, _playerPaddle.GetY() + _boost2Offset);
+                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8, _playerPaddle.GetY() + _boost2Offset);
                 _playerBoost1Sprite.Begin();
                 _playerBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
                 _playerBoost1Sprite.End();
             }
+            //Boost 1 display
             else if (_playerBoostState > 0)
             {
-                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 5, _playerPaddle.GetY() + _boost1Offset);
+                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4, _playerPaddle.GetY() + _boost1Offset);
                 _playerBoost2Sprite.Begin();
                 _playerBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
                 _playerBoost2Sprite.End();
