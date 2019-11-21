@@ -223,9 +223,9 @@ namespace MonoPong
                 if ( _ballSpeed.X < 0 ) { 
                     if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 5 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + 5 - (_gameSpeed * _ballSpeed.X))
                     {
-                        if (_ballPosition.Y > _playerPaddle.GetY() + 25 && _ballPosition.Y < _playerPaddle.GetY() + 25 + 50)
+                        if (_ballPosition.Y > _playerPaddle.GetY() + _boost1Offset && _ballPosition.Y < _playerPaddle.GetY() + _boost1Offset + _boost1Height)
                             _ballSpeed.X = _ballSpeed.X * -2f;
-                        if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 25 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 25 + 50)
+                        else if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + _boost1Offset && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + _boost1Offset + _boost1Height)
                             _ballSpeed.X = _ballSpeed.X * -2f;
                     }
                 }
@@ -238,9 +238,9 @@ namespace MonoPong
                 {
                     if (_ballPosition.X <= _playerPaddle.GetX() + _paddleWidth +_boost1Width + _boost2Width + 10 && _ballPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 10 - (_gameSpeed * _ballSpeed.X))
                     {
-                        if (_ballPosition.Y > _playerPaddle.GetY() + 40 && _ballPosition.Y < _playerPaddle.GetY() + 40 + 25)
+                        if (_ballPosition.Y > _playerPaddle.GetY() + _boost2Offset && _ballPosition.Y < _playerPaddle.GetY() + _boost2Offset + _boost2Height)
                             _ballSpeed.X = _ballSpeed.X * -3f;
-                        if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + 40 && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + 40 + 25)
+                        else if (_ballPosition.Y + _ballSize > _playerPaddle.GetY() + _boost2Offset && _ballPosition.Y + _ballSize < _playerPaddle.GetY() + _boost2Offset + _boost2Height)
                             _ballSpeed.X = _ballSpeed.X * -3f;
                     }
                 }
