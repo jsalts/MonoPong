@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 namespace MonoPong.Player
@@ -13,11 +14,14 @@ namespace MonoPong.Player
         private readonly List<Keys> _upKeys = new List<Keys>();
         private readonly List<Keys> _downKeys = new List<Keys>();
         private Vector2 _paddlePosition;
-        private float _gameSpeed = 1f; 
+        private float _gameSpeed = 1f;
+
+        private Texture2D _paddleTexture;
+        private SpriteBatch _paddleSprite;
 
         public Paddle(int x, int y)
         {
-            this._paddlePosition = new Vector2(x, y);
+            _paddlePosition = new Vector2(x, y);
         }
 
         public float GameSpeed
@@ -30,13 +34,13 @@ namespace MonoPong.Player
         public void AddUpKeys(Keys key)
         {
             _upKeys.Add(key);
-        }        
-        
+        }
+
         public void AddDownKeys(Keys key)
         {
             _downKeys.Add(key);
-        }        
-        
+        }
+
         public float GetX()
         {
             return _paddlePosition.X;
@@ -47,7 +51,7 @@ namespace MonoPong.Player
             return _paddlePosition.Y;
         }
 
-        public Vector2 GetPosition()
+        private Vector2 GetPosition()
         {
             return _paddlePosition;
         }
@@ -75,6 +79,30 @@ namespace MonoPong.Player
             {
                 MovePaddle(1 * GameSpeed);
             }
+        }
+
+        public void Draw()
+        {
+            _paddleSprite.Begin();
+            _paddleSprite.Draw(_paddleTexture, GetPosition(), Color.White);
+            _paddleSprite.End();
+        }
+
+        public void LoadContent(GraphicsDevice graphicsDevice)
+        {
+            _paddleSprite = new SpriteBatch(graphicsDevice);
+            _paddleTexture = new Texture2D(graphicsDevice, 20, 100);
+            Color[] paddleColorData = new Color[20 * 100];
+            for (int i = 0; i < 2000; i++)
+            {
+                paddleColorData[i] = Color.White;
+            }
+            _paddleTexture.SetData(paddleColorData);
+        }
+
+        public void Initialize()
+        {
+
         }
     }
 }

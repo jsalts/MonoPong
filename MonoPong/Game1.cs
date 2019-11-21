@@ -9,7 +9,6 @@ namespace MonoPong
     {
         private float _gameSpeed = 5f;
 
-        GraphicsDeviceManager _graphics;
         private int _ballSize = 25;
         private int _boost1Width = 12;
         private int _boost2Width = 10;
@@ -19,14 +18,11 @@ namespace MonoPong
         private int _paddleHeight = 100;
 
         SpriteBatch _ballSprite;
-        SpriteBatch _playerPaddleSprite;
-        SpriteBatch _aiPaddleSprite;
         SpriteBatch _playerBoost1Sprite;
         SpriteBatch _playerBoost2Sprite;
         SpriteBatch _aiBoost1Sprite;
         SpriteBatch _aiBoost2Sprite;
         Texture2D _ballTexture;
-        Texture2D _paddleTexture;
         Texture2D _boost1Texture;
         Texture2D _boost2Texture;
         Vector2 _ballPosition;
@@ -39,8 +35,8 @@ namespace MonoPong
         private int _boost2Offset;
 
         public Game1()
-        {
-            _graphics = new GraphicsDeviceManager(this);
+        { 
+            var unused = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _ballPosition = new Vector2(50, 100);
             _playerPaddle = new Paddle(30,70);
@@ -63,18 +59,11 @@ namespace MonoPong
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            _aiPaddle.Initialize();
+            _playerPaddle.Initialize();
 
             _ballTexture = new Texture2D(this.GraphicsDevice, _ballSize, _ballSize);
             ColorBall(Color.White);
-
-            _paddleTexture = new Texture2D(this.GraphicsDevice, 20, 100);
-            Color[] paddleColorData = new Color[20 * 100];
-            for (int i = 0; i < 2000; i++)
-            {
-                paddleColorData[i] = Color.White;
-            }
-            _paddleTexture.SetData(paddleColorData);
 
             _boost1Texture = new Texture2D(this.GraphicsDevice, _boost1Width, _boost1Height);
             Color[] boost1ColorData = new Color[_boost1Width * _boost1Height];
@@ -107,10 +96,11 @@ namespace MonoPong
         /// </summary>
         protected override void LoadContent()
         {
+            _playerPaddle.LoadContent(GraphicsDevice);
+            _aiPaddle.LoadContent(GraphicsDevice);
+            
             // Create a new SpriteBatch, which can be used to draw textures.
             _ballSprite = new SpriteBatch(GraphicsDevice);
-            _playerPaddleSprite = new SpriteBatch(GraphicsDevice);
-            _aiPaddleSprite = new SpriteBatch(GraphicsDevice);
             _playerBoost1Sprite = new SpriteBatch(GraphicsDevice);
             _playerBoost2Sprite = new SpriteBatch(GraphicsDevice);
             _aiBoost1Sprite = new SpriteBatch(GraphicsDevice);
@@ -312,17 +302,14 @@ namespace MonoPong
         {
             GraphicsDevice.Clear(Color.Black);
 
-            // TODO: Add your drawing code here
             _ballSprite.Begin();
             _ballSprite.Draw(_ballTexture, _ballPosition, Color.White);
             _ballSprite.End();
-            _playerPaddleSprite.Begin();
-            _playerPaddleSprite.Draw(_paddleTexture, _playerPaddle.GetPosition(), Color.White);
-            _playerPaddleSprite.End();
-            _aiPaddleSprite.Begin();
-            _aiPaddleSprite.Draw(_paddleTexture, _aiPaddle.GetPosition(), Color.White);
-            _aiPaddleSprite.End();
-            //Player Boost 2 display
+
+            _playerPaddle.Draw();
+            _aiPaddle.Draw();
+
+            //Boost 2 display
             if (_playerBoostState > 10)
             {
                 Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8, _playerPaddle.GetY() + _boost2Offset);
