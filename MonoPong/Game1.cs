@@ -23,6 +23,8 @@ namespace MonoPong
         SpriteBatch _aiPaddleSprite;
         SpriteBatch _playerBoost1Sprite;
         SpriteBatch _playerBoost2Sprite;
+        SpriteBatch _aiBoost1Sprite;
+        SpriteBatch _aiBoost2Sprite;
         Texture2D _ballTexture;
         Texture2D _paddleTexture;
         Texture2D _boost1Texture;
@@ -32,6 +34,7 @@ namespace MonoPong
         readonly Paddle _playerPaddle;
         readonly Paddle _aiPaddle;
         int _playerBoostState;
+        int _aiBoostState;
         private int _boost1Offset;
         private int _boost2Offset;
 
@@ -40,7 +43,7 @@ namespace MonoPong
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _ballPosition = new Vector2(50, 100);
-            _playerPaddle = new Paddle(30,300);
+            _playerPaddle = new Paddle(30,70);
             _aiPaddle = new Paddle(750, 70);
 
             _playerPaddle.AddUpKeys(Keys.W);
@@ -93,6 +96,7 @@ namespace MonoPong
 
             _ballSpeed = new Vector2(1, 1);
             _playerBoostState = 0;
+            _aiBoostState = 0;
             _boost1Offset = (_paddleHeight - _boost1Height) / 2;
             _boost2Offset = (_paddleHeight - _boost2Height) / 2;
         }
@@ -109,6 +113,8 @@ namespace MonoPong
             _aiPaddleSprite = new SpriteBatch(GraphicsDevice);
             _playerBoost1Sprite = new SpriteBatch(GraphicsDevice);
             _playerBoost2Sprite = new SpriteBatch(GraphicsDevice);
+            _aiBoost1Sprite = new SpriteBatch(GraphicsDevice);
+            _aiBoost2Sprite = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
         }
@@ -134,6 +140,7 @@ namespace MonoPong
 
             DetermineBallPosition();
             PlayerBoost();
+            AiBoost();
             
             base.Update(gameTime);
         }
@@ -229,6 +236,48 @@ namespace MonoPong
                 _playerBoostState = -100;
         }
 
+        private void AiBoost()
+        {
+            if (_aiBoostState == 0)
+                return;
+            //Increment Boost Cooldown Timer
+            else if (_aiBoostState < 0)
+                _aiBoostState++;
+            //Boost 1 Interaction
+            else if (_aiBoostState > 0 && _aiBoostState <= 10)
+            {
+                if (_ballSpeed.X > 0)
+                {
+                    if (_ballPosition.X + _ballSize >= _aiPaddle.GetX() - _boost1Width - 4 && _ballPosition.X + _ballSize < _aiPaddle.GetX() - 4 + (_gameSpeed * _ballSpeed.X))
+                    {
+                        if (_ballPosition.Y > _aiPaddle.GetY() + _boost1Offset && _ballPosition.Y < _aiPaddle.GetY() + _boost1Offset + _boost1Height)
+                            _ballSpeed.X = _ballSpeed.X * -2f;
+                        else if (_ballPosition.Y + _ballSize > _aiPaddle.GetY() + _boost1Offset && _ballPosition.Y + _ballSize < _aiPaddle.GetY() + _boost1Offset + _boost1Height)
+                            _ballSpeed.X = _ballSpeed.X * -2f;
+                    }
+                }
+                _aiBoostState++;
+            }
+            //Boost 2 Interaction
+            else if (_aiBoostState > 10 && _aiBoostState <= 20)
+            {
+                if (_ballSpeed.X > 0)
+                {
+                    if (_ballPosition.X + _ballSize >= _aiPaddle.GetX() - _boost1Width - _boost2Width - 10 && _ballPosition.X + _ballSize < _aiPaddle.GetX() - _boost1Width - 6 + (_gameSpeed * _ballSpeed.X))
+                    {
+                        if (_ballPosition.Y > _aiPaddle.GetY() + _boost2Offset && _ballPosition.Y < _aiPaddle.GetY() + _boost2Offset + _boost2Height)
+                            _ballSpeed.X = _ballSpeed.X * -3f;
+                        else if (_ballPosition.Y + _ballSize > _aiPaddle.GetY() + _boost2Offset && _ballPosition.Y + _ballSize < _aiPaddle.GetY() + _boost2Offset + _boost2Height)
+                            _ballSpeed.X = _ballSpeed.X * -3f;
+                    }
+                }
+                _aiBoostState++;
+            }
+            //Activate Boost Cooldown
+            else if (_aiBoostState > 20)
+                _aiBoostState = -100;
+        }
+
         private void HandleKeystrokes()
         {
             _playerPaddle.HandleKeystrokes();
@@ -237,7 +286,9 @@ namespace MonoPong
             if (_playerBoostState == 0 &&
                 (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D)))
                 _playerBoostState = 1;
-            
+            if (_aiBoostState == 0 && (Keyboard.GetState().IsKeyDown(Keys.Left)))
+                _aiBoostState = 1;
+
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) 
                 Exit();
         }
@@ -271,7 +322,7 @@ namespace MonoPong
             _aiPaddleSprite.Begin();
             _aiPaddleSprite.Draw(_paddleTexture, _aiPaddle.GetPosition(), Color.White);
             _aiPaddleSprite.End();
-            //Boost 2 display
+            //Player Boost 2 display
             if (_playerBoostState > 10)
             {
                 Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8, _playerPaddle.GetY() + _boost2Offset);
@@ -279,13 +330,29 @@ namespace MonoPong
                 _playerBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
                 _playerBoost1Sprite.End();
             }
-            //Boost 1 display
+            //Player Boost 1 display
             else if (_playerBoostState > 0)
             {
                 Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4, _playerPaddle.GetY() + _boost1Offset);
                 _playerBoost2Sprite.Begin();
                 _playerBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
                 _playerBoost2Sprite.End();
+            }
+            //AI Boost 2 display
+            if (_aiBoostState > 10)
+            {
+                Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - _boost2Width - 8, _aiPaddle.GetY() + _boost2Offset);
+                _aiBoost1Sprite.Begin();
+                _aiBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
+                _aiBoost1Sprite.End();
+            }
+            //AI Boost 1 display
+            else if (_aiBoostState > 0)
+            {
+                Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - 4, _aiPaddle.GetY() + _boost1Offset);
+                _aiBoost2Sprite.Begin();
+                _aiBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
+                _aiBoost2Sprite.End();
             }
             base.Draw(gameTime);
         }
