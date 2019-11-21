@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoPong.Player;
 
 namespace MonoPong
 {
@@ -8,6 +9,7 @@ namespace MonoPong
     {
         private float _gameSpeed = 5f;
 
+        GraphicsDeviceManager _graphics;
         private int _ballSize = 25;
         private int _boost1Width = 12;
         private int _boost2Width = 10;
@@ -16,7 +18,6 @@ namespace MonoPong
         private int _paddleWidth = 20;
         private int _paddleHeight = 100;
 
-        GraphicsDeviceManager _graphics;
         SpriteBatch _ballSprite;
         SpriteBatch _playerPaddleSprite;
         SpriteBatch _aiPaddleSprite;
@@ -28,8 +29,8 @@ namespace MonoPong
         Texture2D _boost2Texture;
         Vector2 _ballPosition;
         Vector2 _ballSpeed;
-        Paddle _playerPaddle;
-        Paddle _aiPaddle;
+        readonly Paddle _playerPaddle;
+        readonly Paddle _aiPaddle;
         int _playerBoostState;
         private int _boost1Offset;
         private int _boost2Offset;
@@ -41,6 +42,14 @@ namespace MonoPong
             _ballPosition = new Vector2(50, 100);
             _playerPaddle = new Paddle(30,300);
             _aiPaddle = new Paddle(750, 70);
+
+            _playerPaddle.AddUpKeys(Keys.W);
+            _playerPaddle.AddUpKeys(Keys.OemComma);           
+            _playerPaddle.AddDownKeys(Keys.O);
+            _playerPaddle.AddDownKeys(Keys.S);
+            
+            _aiPaddle.AddUpKeys(Keys.Up);
+            _aiPaddle.AddDownKeys(Keys.Down);
         }
 
         /// <summary>
@@ -120,12 +129,19 @@ namespace MonoPong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            UpdateGameSpeed();
             HandleKeystrokes();
 
             DetermineBallPosition();
             PlayerBoost();
             
             base.Update(gameTime);
+        }
+
+        private void UpdateGameSpeed()
+        {
+            _aiPaddle.GameSpeed = _gameSpeed;
+            _playerPaddle.GameSpeed = _gameSpeed;
         }
 
         private void DetermineBallPosition()
@@ -215,20 +231,15 @@ namespace MonoPong
 
         private void HandleKeystrokes()
         {
+            _playerPaddle.HandleKeystrokes();
+            _aiPaddle.HandleKeystrokes();
+            
+            if (_playerBoostState == 0 &&
+                (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D)))
+                _playerBoostState = 1;
+            
             if (Keyboard.GetState().IsKeyDown(Keys.Escape)) 
                 Exit();
-            //Control AI paddle
-            if (Keyboard.GetState().IsKeyDown(Keys.Down))
-                _aiPaddle.MovePaddle(1 * _gameSpeed);
-            if (Keyboard.GetState().IsKeyDown(Keys.Up))
-                _aiPaddle.MovePaddle(-1 * _gameSpeed);
-            //Control Player Paddle
-            if (Keyboard.GetState().IsKeyDown(Keys.O) || Keyboard.GetState().IsKeyDown(Keys.S))
-                _playerPaddle.MovePaddle(1 * _gameSpeed);
-            if (Keyboard.GetState().IsKeyDown(Keys.OemComma) || Keyboard.GetState().IsKeyDown(Keys.W))
-                _playerPaddle.MovePaddle(-1 * _gameSpeed);
-            if (_playerBoostState == 0 && (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D)))
-                _playerBoostState = 1;
         }
 
         private void ColorBall(Color color)
