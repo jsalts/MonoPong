@@ -16,12 +16,14 @@ namespace MonoPong
         private int _paddleWidth = 20;
         private int _paddleHeight = 100;
 
-        SpriteBatch _ballSprite;
+        private string _gameState = "game";
+
         SpriteBatch _playerBoost1Sprite;
         SpriteBatch _playerBoost2Sprite;
         SpriteBatch _aiBoost1Sprite;
         SpriteBatch _aiBoost2Sprite;
-        Texture2D _ballTexture;
+        SpriteBatch _spriteBatch;
+        SpriteFont _pauseText;
         Texture2D _boost1Texture;
         Texture2D _boost2Texture;
         readonly Paddle _playerPaddle;
@@ -30,6 +32,8 @@ namespace MonoPong
         int _aiBoostState;
         private int _boost1Offset;
         private int _boost2Offset;
+        private readonly Ball _ball;
+        KeyboardState lastKeyboardState;
 
 
         public Game1()
@@ -37,14 +41,14 @@ namespace MonoPong
             var unused = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             _ball = new Ball(new Vector2(50, 100));
-            _playerPaddle = new Paddle(30,70);
+            _playerPaddle = new Paddle(30, 70);
             _aiPaddle = new Paddle(750, 70);
 
             _playerPaddle.AddUpKeys(Keys.W);
-            _playerPaddle.AddUpKeys(Keys.OemComma);           
+            _playerPaddle.AddUpKeys(Keys.OemComma);
             _playerPaddle.AddDownKeys(Keys.O);
             _playerPaddle.AddDownKeys(Keys.S);
-            
+
             _aiPaddle.AddUpKeys(Keys.Up);
             _aiPaddle.AddDownKeys(Keys.Down);
         }
@@ -65,7 +69,7 @@ namespace MonoPong
 
             _boost1Texture = new Texture2D(GraphicsDevice, _boost1Width, _boost1Height);
             Color[] boost1ColorData = new Color[_boost1Width * _boost1Height];
-            for (int i = 0; i < _boost1Width*_boost1Height; i++)
+            for (int i = 0; i < _boost1Width * _boost1Height; i++)
             {
                 boost1ColorData[i] = Color.Blue;
             }
@@ -96,7 +100,7 @@ namespace MonoPong
         {
             _playerPaddle.LoadContent(GraphicsDevice);
             _aiPaddle.LoadContent(GraphicsDevice);
-            
+
             // Create a new SpriteBatch, which can be used to draw textures.
             _ball.BallSprite = new SpriteBatch(GraphicsDevice);
             _playerBoost1Sprite = new SpriteBatch(GraphicsDevice);
@@ -172,9 +176,9 @@ namespace MonoPong
             //Check for top collision
             if (_ball.BallPosition.Y < 0) _ball.BallSpeed.Y = 1;
             //Check for game over
-            if (_ballPosition.X < 0)
+            if (_ball.BallPosition.X < 0)
                 Exit();
-            if (_ballPosition.X + _ballSize > this.GraphicsDevice.Viewport.Width)
+            if (_ball.BallPosition.X + _ball._ballSize > GraphicsDevice.Viewport.Width)
                 //Exit();
                 _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
 
@@ -194,7 +198,8 @@ namespace MonoPong
             //Boost 1 Interaction
             else if (_playerBoostState > 0 && _playerBoostState <= 10)
             {
-                if (_ball.BallSpeed.X < 0 ) { 
+                if (_ball.BallSpeed.X < 0)
+                {
                     if (_ball.BallPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 && _ball.BallPosition.X > _playerPaddle.GetX() + _paddleWidth + 4 - (_gameSpeed * _ball.BallSpeed.X))
                     {
                         if (_ball.BallPosition.Y > _playerPaddle.GetY() + _boost1Offset && _ball.BallPosition.Y < _playerPaddle.GetY() + _boost1Offset + _boost1Height)
@@ -209,7 +214,7 @@ namespace MonoPong
             {
                 if (_ball.BallSpeed.X < 0)
                 {
-                    if (_ball.BallPosition.X <= _playerPaddle.GetX() + _paddleWidth +_boost1Width + _boost2Width + 10 && _ball.BallPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 - (_gameSpeed * _ball.BallSpeed.X))
+                    if (_ball.BallPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + _boost2Width + 10 && _ball.BallPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 - (_gameSpeed * _ball.BallSpeed.X))
                     {
                         if (_ball.BallPosition.Y > _playerPaddle.GetY() + _boost2Offset && _ball.BallPosition.Y < _playerPaddle.GetY() + _boost2Offset + _boost2Height)
                             _ball.BallSpeed.X = _ball.BallSpeed.X * -3f;
@@ -296,12 +301,20 @@ namespace MonoPong
         {
             GraphicsDevice.Clear(Color.Black);
 
-            _ballSprite.Begin();
-            _ballSprite.Draw(_ballTexture, _ballPosition, Color.White);
-            _ballSprite.End();
+            if (_gameState == "game" || _gameState == "pause")
+            {
+                if (_gameState == "pause")
+                {
+                    _spriteBatch.Begin();
+                    _spriteBatch.DrawString(_pauseText, "PAUSED", new Vector2(200, 150), Color.White);
+                    _spriteBatch.End();
+                }
 
-            _playerPaddle.Draw();
-            _aiPaddle.Draw();
+
+                _playerPaddle.Draw();
+                _aiPaddle.Draw();
+                _ball.Draw();
+
 
                 //Boost 2 display
                 if (_playerBoostState > 10)
