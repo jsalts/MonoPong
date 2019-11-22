@@ -45,9 +45,12 @@ namespace MonoPong
             _playerPaddle.AddUpKeys(Keys.OemComma);
             _playerPaddle.AddDownKeys(Keys.O);
             _playerPaddle.AddDownKeys(Keys.S);
+            _playerPaddle.AddBoostKeys(Keys.D);
+            _playerPaddle.AddBoostKeys(Keys.E);
 
             _aiPaddle.AddUpKeys(Keys.Up);
             _aiPaddle.AddDownKeys(Keys.Down);
+            _aiPaddle.AddBoostKeys(Keys.Left);
         }
 
         /// <summary>
@@ -130,8 +133,8 @@ namespace MonoPong
             {
                 case "game":
                     _ball.DetermineBallPosition(_aiPaddle, _playerPaddle, _paddleHeight, _paddleWidth, GraphicsDevice);
-                    PlayerBoost();
-                    AiBoost();
+                    _playerPaddle.ManageBoost();
+                    _aiPaddle.ManageBoost();
                     break;
                 case "pause":
                     break;
@@ -264,11 +267,6 @@ namespace MonoPong
                     _playerPaddle.HandleKeystrokes();
                     _aiPaddle.HandleKeystrokes();
 
-                    if (_playerBoostState == 0 &&
-                        (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D)))
-                        _playerBoostState = 1;
-                    if (_aiBoostState == 0 && (Keyboard.GetState().IsKeyDown(Keys.Left)))
-                        _aiBoostState = 1;
                     if (!Keyboard.GetState().IsKeyDown(Keys.Space) & lastKeyboardState.IsKeyDown(Keys.Space))
                         _gameState = "pause";
                     break;
@@ -300,35 +298,6 @@ namespace MonoPong
                 _aiPaddle.Draw(_spriteBatch);
                 _ball.Draw(_spriteBatch);
 
-                //Boost 2 display
-                if (_playerBoostState > 10)
-                {
-                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8,
-                        _playerPaddle.GetY() + _boost2Offset);
-                    _spriteBatch.Draw(_boost2Texture, boostPosition, Color.White);
-                }
-                //Player Boost 1 display
-                else if (_playerBoostState > 0)
-                {
-                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4,
-                        _playerPaddle.GetY() + _boost1Offset);
-                    _spriteBatch.Draw(_boost1Texture, boostPosition, Color.White);
-                }
-
-                //AI Boost 2 display
-                if (_aiBoostState > 10)
-                {
-                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - _boost2Width - 8,
-                        _aiPaddle.GetY() + _boost2Offset);
-                    _spriteBatch.Draw(_boost2Texture, boostPosition, Color.White);
-                }
-                //AI Boost 1 display
-                else if (_aiBoostState > 0)
-                {
-                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - 4,
-                        _aiPaddle.GetY() + _boost1Offset);
-                    _spriteBatch.Draw(_boost1Texture, boostPosition, Color.White);
-                }
             }
             _spriteBatch.End();
             base.Draw(gameTime);
