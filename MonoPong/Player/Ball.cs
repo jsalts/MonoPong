@@ -5,7 +5,7 @@ namespace MonoPong.Player
 {
     public class Ball
     {
-        public int _ballSize = 25;
+        public readonly int _ballSize = 25;
         public SpriteBatch BallSprite { get; set; }
         public Texture2D BallTexture { get; set; }
         public float GameSpeed { get; set; }
@@ -37,34 +37,38 @@ namespace MonoPong.Player
             BallTexture.SetData(ballColorData);
         }
 
-        public void DetermineBallPosition(Paddle _aiPaddle, Paddle _playerPaddle, int _paddleHeight, int _paddleWidth)
+        public void DetermineBallPosition(Paddle aiPaddle, Paddle playerPaddle, int paddleHeight, int paddleWidth, GraphicsDevice graphicsDevice)
         {
             //Move ball
             BallPosition.X += BallSpeed.X * GameSpeed;
             BallPosition.Y += BallSpeed.Y * GameSpeed;
 
             //Check for right player paddle collision
-            if (BallPosition.X + _ballSize >= _aiPaddle.GetX() && BallPosition.X + _ballSize < _aiPaddle.GetX() + (GameSpeed * BallSpeed.X))
+            if (BallPosition.X + _ballSize >= aiPaddle.GetX() && BallPosition.X + _ballSize < aiPaddle.GetX() + (GameSpeed * BallSpeed.X))
             {
-                if (BallPosition.Y > _aiPaddle.GetY() && BallPosition.Y < _aiPaddle.GetY() + _paddleHeight) BallSpeed.X = -1;
-                if (BallPosition.Y + _ballSize > _aiPaddle.GetY() && BallPosition.Y + _ballSize < _aiPaddle.GetY() + _paddleHeight) BallSpeed.X = -1;
+                if (BallPosition.Y > aiPaddle.GetY() && BallPosition.Y < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
+                if (BallPosition.Y + _ballSize > aiPaddle.GetY() && BallPosition.Y + _ballSize < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
             }
             //Check for left player paddle collision
-            if (BallPosition.X <= _playerPaddle.GetX() + _paddleWidth && BallPosition.X > _playerPaddle.GetX() + _paddleWidth + (GameSpeed * BallSpeed.X))
+            if (BallPosition.X <= playerPaddle.GetX() + paddleWidth && BallPosition.X > playerPaddle.GetX() + paddleWidth + (GameSpeed * BallSpeed.X))
             {
-                if (BallPosition.Y > _playerPaddle.GetY() && BallPosition.Y < _playerPaddle.GetY() + _paddleHeight) BallSpeed.X = 1;
-                if (BallPosition.Y + _ballSize > _playerPaddle.GetY() && BallPosition.Y + _ballSize < _playerPaddle.GetY() + _paddleHeight) BallSpeed.X = 1;
+                if (BallPosition.Y > playerPaddle.GetY() && BallPosition.Y < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
+                if (BallPosition.Y + _ballSize > playerPaddle.GetY() && BallPosition.Y + _ballSize < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
             }
             //Check for bottom collision
             if (BallPosition.Y + _ballSize > 480) BallSpeed.Y = -1;
             //Check for top collision
             if (BallPosition.Y < 0) BallSpeed.Y = 1;
             //Check for game over
-//            if (BallPosition.X < 0)
-//                Exit();
-//            if (BallPosition.X + _ballSize > GraphicsDevice.Viewport.Width)
-//                //Exit();
-//                BallSpeed.X = BallSpeed.X * -1;
+            if (BallPosition.X < 0)
+            {
+                BallSpeed.X *= -1;
+            }
+            if (BallPosition.X + _ballSize > graphicsDevice.Viewport.Width)
+            {
+                BallSpeed.X *= -1;
+            }
+
 
             //Update Ball Color
             if (BallSpeed.X > 2 || BallSpeed.X < -2)
