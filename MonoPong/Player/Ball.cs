@@ -56,10 +56,16 @@ namespace MonoPong.Player
                 if (BallPosition.Y + _ballSize > playerPaddle.GetY() && BallPosition.Y + _ballSize < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
             }
             //Check for bottom collision
-            if (BallPosition.Y + _ballSize > 480) BallSpeed.Y = -1;
+            if (BallPosition.Y + _ballSize > 480)
+            {
+                BallSpeed.Y = -1;
+            }
             //Check for top collision
-            if (BallPosition.Y < 0) BallSpeed.Y = 1;
-            //Check for game over
+            if (BallPosition.Y < 0)
+            {
+                BallSpeed.Y = 1;
+            }
+            
             if (BallPosition.X < 0)
             {
                 BallSpeed.X *= -1;
@@ -72,11 +78,17 @@ namespace MonoPong.Player
 
             //Update Ball Color
             if (BallSpeed.X > 2 || BallSpeed.X < -2)
+            {
                 ColorBall(Color.Red);
+            }
             else if (BallSpeed.X > 1 || BallSpeed.X < -1)
+            {
                 ColorBall(Color.Yellow);
+            }
             else
+            {
                 ColorBall(Color.White);
+            }
         }
         
     }
