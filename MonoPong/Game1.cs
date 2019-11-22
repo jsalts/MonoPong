@@ -143,6 +143,11 @@ namespace MonoPong
                     break;
             }
 
+            _ball.DetermineBallPosition(_aiPaddle, _playerPaddle, _paddleHeight, _paddleWidth);
+            DetermineBallPosition();
+            PlayerBoost();
+            AiBoost();
+            
             base.Update(gameTime);
         }
 
@@ -152,7 +157,7 @@ namespace MonoPong
             _playerPaddle.GameSpeed = _gameSpeed;
             _ball.GameSpeed = _gameSpeed;
         }
-
+        
         private void DetermineBallPosition()
         {
             //Move ball
