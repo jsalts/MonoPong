@@ -18,10 +18,6 @@ namespace MonoPong
 
         private string _gameState = "game";
 
-        SpriteBatch _playerBoost1Sprite;
-        SpriteBatch _playerBoost2Sprite;
-        SpriteBatch _aiBoost1Sprite;
-        SpriteBatch _aiBoost2Sprite;
         SpriteBatch _spriteBatch;
         SpriteFont _pauseText;
         Texture2D _boost1Texture;
@@ -105,10 +101,6 @@ namespace MonoPong
 
             // Create a new SpriteBatch, which can be used to draw textures.
             _ball.BallSprite = new SpriteBatch(GraphicsDevice);
-            _playerBoost1Sprite = new SpriteBatch(GraphicsDevice);
-            _playerBoost2Sprite = new SpriteBatch(GraphicsDevice);
-            _aiBoost1Sprite = new SpriteBatch(GraphicsDevice);
-            _aiBoost2Sprite = new SpriteBatch(GraphicsDevice);
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _pauseText = Content.Load<SpriteFont>("PauseText");
 
@@ -296,39 +288,31 @@ namespace MonoPong
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-
+            _spriteBatch.Begin();
             if (_gameState == "game" || _gameState == "pause")
             {
                 if (_gameState == "pause")
                 {
-                    _spriteBatch.Begin();
                     _spriteBatch.DrawString(_pauseText, "PAUSED", new Vector2(200, 150), Color.White);
-                    _spriteBatch.End();
                 }
-
 
                 _playerPaddle.Draw();
                 _aiPaddle.Draw();
                 _ball.Draw();
-
 
                 //Boost 2 display
                 if (_playerBoostState > 10)
                 {
                     Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8,
                         _playerPaddle.GetY() + _boost2Offset);
-                    _playerBoost1Sprite.Begin();
-                    _playerBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
-                    _playerBoost1Sprite.End();
+                    _spriteBatch.Draw(_boost2Texture, boostPosition, Color.White);
                 }
                 //Player Boost 1 display
                 else if (_playerBoostState > 0)
                 {
                     Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4,
                         _playerPaddle.GetY() + _boost1Offset);
-                    _playerBoost2Sprite.Begin();
-                    _playerBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
-                    _playerBoost2Sprite.End();
+                    _spriteBatch.Draw(_boost1Texture, boostPosition, Color.White);
                 }
 
                 //AI Boost 2 display
@@ -336,21 +320,17 @@ namespace MonoPong
                 {
                     Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - _boost2Width - 8,
                         _aiPaddle.GetY() + _boost2Offset);
-                    _aiBoost1Sprite.Begin();
-                    _aiBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
-                    _aiBoost1Sprite.End();
+                    _spriteBatch.Draw(_boost2Texture, boostPosition, Color.White);
                 }
                 //AI Boost 1 display
                 else if (_aiBoostState > 0)
                 {
                     Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - 4,
                         _aiPaddle.GetY() + _boost1Offset);
-                    _aiBoost2Sprite.Begin();
-                    _aiBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
-                    _aiBoost2Sprite.End();
+                    _spriteBatch.Draw(_boost1Texture, boostPosition, Color.White);
                 }
             }
-
+            _spriteBatch.End();
             base.Draw(gameTime);
         }
     }
