@@ -17,11 +17,15 @@ namespace MonoPong
         private int _paddleWidth = 20;
         private int _paddleHeight = 100;
 
+        private string _gameState = "game";
+
         SpriteBatch _ballSprite;
         SpriteBatch _playerBoost1Sprite;
         SpriteBatch _playerBoost2Sprite;
         SpriteBatch _aiBoost1Sprite;
         SpriteBatch _aiBoost2Sprite;
+        SpriteBatch _spriteBatch;
+        SpriteFont _pauseText;
         Texture2D _ballTexture;
         Texture2D _boost1Texture;
         Texture2D _boost2Texture;
@@ -33,6 +37,8 @@ namespace MonoPong
         int _aiBoostState;
         private int _boost1Offset;
         private int _boost2Offset;
+        KeyboardState lastKeyboardState;
+
 
         public Game1()
         { 
@@ -105,6 +111,8 @@ namespace MonoPong
             _playerBoost2Sprite = new SpriteBatch(GraphicsDevice);
             _aiBoost1Sprite = new SpriteBatch(GraphicsDevice);
             _aiBoost2Sprite = new SpriteBatch(GraphicsDevice);
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            _pauseText = Content.Load<SpriteFont>("PauseText");
 
             // TODO: use this.Content to load your game content here
         }
@@ -128,10 +136,17 @@ namespace MonoPong
             UpdateGameSpeed();
             HandleKeystrokes();
 
-            DetermineBallPosition();
-            PlayerBoost();
-            AiBoost();
-            
+            switch (_gameState)
+            {
+                case "game":
+                    DetermineBallPosition();
+                    PlayerBoost();
+                    AiBoost();
+                    break;
+                case "pause":
+                    break;
+            }
+
             base.Update(gameTime);
         }
 
@@ -171,7 +186,8 @@ namespace MonoPong
                 _ballSpeed.Y = 1;
             //Check for game over
             if (_ballPosition.X < 0)
-                Exit();
+                //Exit();
+                _ballSpeed.X = _ballSpeed.X * -1;
             if (_ballPosition.X + _ballSize > this.GraphicsDevice.Viewport.Width)
                 //Exit();
                 _ballSpeed.X = _ballSpeed.X * -1;
@@ -270,17 +286,31 @@ namespace MonoPong
 
         private void HandleKeystrokes()
         {
-            _playerPaddle.HandleKeystrokes();
-            _aiPaddle.HandleKeystrokes();
-            
-            if (_playerBoostState == 0 &&
-                (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D)))
-                _playerBoostState = 1;
-            if (_aiBoostState == 0 && (Keyboard.GetState().IsKeyDown(Keys.Left)))
-                _aiBoostState = 1;
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Escape)) 
+            //Quit the game anytime escape is pressed
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+            switch (_gameState)
+            {
+                case "game":
+                    _playerPaddle.HandleKeystrokes();
+                    _aiPaddle.HandleKeystrokes();
+
+                    if (_playerBoostState == 0 &&
+                        (Keyboard.GetState().IsKeyDown(Keys.E) || Keyboard.GetState().IsKeyDown(Keys.D)))
+                        _playerBoostState = 1;
+                    if (_aiBoostState == 0 && (Keyboard.GetState().IsKeyDown(Keys.Left)))
+                        _aiBoostState = 1;
+                    if (!Keyboard.GetState().IsKeyDown(Keys.Space) & lastKeyboardState.IsKeyDown(Keys.Space))
+                        _gameState = "pause";
+                    break;
+                case "pause":
+                    if (!Keyboard.GetState().IsKeyDown(Keys.Space) & lastKeyboardState.IsKeyDown(Keys.Space))
+                        _gameState = "game";
+                    break;
+            }
+
+            lastKeyboardState = Keyboard.GetState();
         }
 
         private void ColorBall(Color color)
@@ -302,44 +332,53 @@ namespace MonoPong
         {
             GraphicsDevice.Clear(Color.Black);
 
-            _ballSprite.Begin();
-            _ballSprite.Draw(_ballTexture, _ballPosition, Color.White);
-            _ballSprite.End();
+            if (_gameState == "game" || _gameState == "pause")
+            {
+                if (_gameState == "pause")
+                {
+                    _spriteBatch.Begin();
+                    _spriteBatch.DrawString(_pauseText, "PAUSED", new Vector2(200,150), Color.White);
+                    _spriteBatch.End();
+                }
+                _ballSprite.Begin();
+                _ballSprite.Draw(_ballTexture, _ballPosition, Color.White);
+                _ballSprite.End();
 
-            _playerPaddle.Draw();
-            _aiPaddle.Draw();
+                _playerPaddle.Draw();
+                _aiPaddle.Draw();
 
-            //Boost 2 display
-            if (_playerBoostState > 10)
-            {
-                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8, _playerPaddle.GetY() + _boost2Offset);
-                _playerBoost1Sprite.Begin();
-                _playerBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
-                _playerBoost1Sprite.End();
-            }
-            //Player Boost 1 display
-            else if (_playerBoostState > 0)
-            {
-                Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4, _playerPaddle.GetY() + _boost1Offset);
-                _playerBoost2Sprite.Begin();
-                _playerBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
-                _playerBoost2Sprite.End();
-            }
-            //AI Boost 2 display
-            if (_aiBoostState > 10)
-            {
-                Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - _boost2Width - 8, _aiPaddle.GetY() + _boost2Offset);
-                _aiBoost1Sprite.Begin();
-                _aiBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
-                _aiBoost1Sprite.End();
-            }
-            //AI Boost 1 display
-            else if (_aiBoostState > 0)
-            {
-                Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - 4, _aiPaddle.GetY() + _boost1Offset);
-                _aiBoost2Sprite.Begin();
-                _aiBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
-                _aiBoost2Sprite.End();
+                //Boost 2 display
+                if (_playerBoostState > 10)
+                {
+                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8, _playerPaddle.GetY() + _boost2Offset);
+                    _playerBoost1Sprite.Begin();
+                    _playerBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
+                    _playerBoost1Sprite.End();
+                }
+                //Player Boost 1 display
+                else if (_playerBoostState > 0)
+                {
+                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4, _playerPaddle.GetY() + _boost1Offset);
+                    _playerBoost2Sprite.Begin();
+                    _playerBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
+                    _playerBoost2Sprite.End();
+                }
+                //AI Boost 2 display
+                if (_aiBoostState > 10)
+                {
+                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - _boost2Width - 8, _aiPaddle.GetY() + _boost2Offset);
+                    _aiBoost1Sprite.Begin();
+                    _aiBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
+                    _aiBoost1Sprite.End();
+                }
+                //AI Boost 1 display
+                else if (_aiBoostState > 0)
+                {
+                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - 4, _aiPaddle.GetY() + _boost1Offset);
+                    _aiBoost2Sprite.Begin();
+                    _aiBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
+                    _aiBoost2Sprite.End();
+                }
             }
             base.Draw(gameTime);
         }
