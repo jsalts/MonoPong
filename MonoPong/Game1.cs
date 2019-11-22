@@ -129,7 +129,7 @@ namespace MonoPong
             switch (_gameState)
             {
                 case "game":
-                    _ball.DetermineBallPosition(_aiPaddle, _playerPaddle, _paddleHeight, _paddleWidth);
+                    _ball.DetermineBallPosition(_aiPaddle, _playerPaddle, _paddleHeight, _paddleWidth, GraphicsDevice);
                     PlayerBoost();
                     AiBoost();
                     break;
