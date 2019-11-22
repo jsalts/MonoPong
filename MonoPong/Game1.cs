@@ -73,6 +73,7 @@ namespace MonoPong
             {
                 boost1ColorData[i] = Color.Blue;
             }
+
             _boost1Texture.SetData(boost1ColorData);
 
             _boost2Texture = new Texture2D(GraphicsDevice, _boost2Width, _boost2Height);
@@ -81,6 +82,7 @@ namespace MonoPong
             {
                 boost2ColorData[i] = Color.CornflowerBlue;
             }
+
             _boost2Texture.SetData(boost2ColorData);
 
             base.Initialize();
@@ -135,7 +137,7 @@ namespace MonoPong
             switch (_gameState)
             {
                 case "game":
-                    DetermineBallPosition();
+                    _ball.DetermineBallPosition(_aiPaddle, _playerPaddle, _paddleHeight, _paddleWidth);
                     PlayerBoost();
                     AiBoost();
                     break;
@@ -143,11 +145,9 @@ namespace MonoPong
                     break;
             }
 
-            _ball.DetermineBallPosition(_aiPaddle, _playerPaddle, _paddleHeight, _paddleWidth);
-            DetermineBallPosition();
             PlayerBoost();
             AiBoost();
-            
+
             base.Update(gameTime);
         }
 
@@ -156,44 +156,6 @@ namespace MonoPong
             _aiPaddle.GameSpeed = _gameSpeed;
             _playerPaddle.GameSpeed = _gameSpeed;
             _ball.GameSpeed = _gameSpeed;
-        }
-        
-        private void DetermineBallPosition()
-        {
-            //Move ball
-            _ball.BallPosition.X += _ball.BallSpeed.X * _gameSpeed;
-            _ball.BallPosition.Y += _ball.BallSpeed.Y * _gameSpeed;
-
-            //Check for right player paddle collision
-            if (_ball.BallPosition.X + _ball._ballSize >= _aiPaddle.GetX() && _ball.BallPosition.X + _ball._ballSize < _aiPaddle.GetX() + (_gameSpeed * _ball.BallSpeed.X))
-            {
-                if (_ball.BallPosition.Y > _aiPaddle.GetY() && _ball.BallPosition.Y < _aiPaddle.GetY() + _paddleHeight) _ball.BallSpeed.X = -1;
-                if (_ball.BallPosition.Y + _ball._ballSize > _aiPaddle.GetY() && _ball.BallPosition.Y + _ball._ballSize < _aiPaddle.GetY() + _paddleHeight) _ball.BallSpeed.X = -1;
-            }
-            //Check for left player paddle collision
-            if (_ball.BallPosition.X <= _playerPaddle.GetX() + _paddleWidth && _ball.BallPosition.X > _playerPaddle.GetX() + _paddleWidth + (_gameSpeed * _ball.BallSpeed.X))
-            {
-                if (_ball.BallPosition.Y > _playerPaddle.GetY() && _ball.BallPosition.Y < _playerPaddle.GetY() + _paddleHeight) _ball.BallSpeed.X = 1;
-                if (_ball.BallPosition.Y + _ball._ballSize > _playerPaddle.GetY() && _ball.BallPosition.Y + _ball._ballSize < _playerPaddle.GetY() + _paddleHeight) _ball.BallSpeed.X = 1;
-            }
-            //Check for bottom collision
-            if (_ball.BallPosition.Y + _ball._ballSize > 480) _ball.BallSpeed.Y = -1;
-            //Check for top collision
-            if (_ball.BallPosition.Y < 0) _ball.BallSpeed.Y = 1;
-            //Check for game over
-            if (_ball.BallPosition.X < 0)
-                Exit();
-            if (_ball.BallPosition.X + _ball._ballSize > GraphicsDevice.Viewport.Width)
-                //Exit();
-                _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
-
-            //Update Ball Color
-            if (_ball.BallSpeed.X > 2 || _ball.BallSpeed.X < -2)
-                _ball.ColorBall(Color.Red);
-            else if (_ball.BallSpeed.X > 1 || _ball.BallSpeed.X < -1)
-                _ball.ColorBall(Color.Yellow);
-            else
-                _ball.ColorBall(Color.White);
         }
 
         private void PlayerBoost()
@@ -205,13 +167,20 @@ namespace MonoPong
             {
                 if (_ball.BallSpeed.X < 0)
                 {
-                    if (_ball.BallPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 && _ball.BallPosition.X > _playerPaddle.GetX() + _paddleWidth + 4 - (_gameSpeed * _ball.BallSpeed.X))
+                    if (_ball.BallPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 &&
+                        _ball.BallPosition.X >
+                        _playerPaddle.GetX() + _paddleWidth + 4 - (_gameSpeed * _ball.BallSpeed.X))
                     {
-                        if (_ball.BallPosition.Y > _playerPaddle.GetY() + _boost1Offset && _ball.BallPosition.Y < _playerPaddle.GetY() + _boost1Offset + _boost1Height)
+                        if (_ball.BallPosition.Y > _playerPaddle.GetY() + _boost1Offset && _ball.BallPosition.Y <
+                            _playerPaddle.GetY() + _boost1Offset + _boost1Height)
                             _ball.BallSpeed.X = _ball.BallSpeed.X * -2f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _playerPaddle.GetY() + _boost1Offset && _ball.BallPosition.Y + _ball._ballSize < _playerPaddle.GetY() + _boost1Offset + _boost1Height) _ball.BallSpeed.X = _ball.BallSpeed.X * -2f;
+                        else if (_ball.BallPosition.Y + _ball._ballSize > _playerPaddle.GetY() + _boost1Offset &&
+                                 _ball.BallPosition.Y + _ball._ballSize <
+                                 _playerPaddle.GetY() + _boost1Offset + _boost1Height)
+                            _ball.BallSpeed.X = _ball.BallSpeed.X * -2f;
                     }
                 }
+
                 _playerBoostState++;
             }
             //Boost 2 Interaction
@@ -219,13 +188,20 @@ namespace MonoPong
             {
                 if (_ball.BallSpeed.X < 0)
                 {
-                    if (_ball.BallPosition.X <= _playerPaddle.GetX() + _paddleWidth + _boost1Width + _boost2Width + 10 && _ball.BallPosition.X > _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 - (_gameSpeed * _ball.BallSpeed.X))
+                    if (_ball.BallPosition.X <=
+                        _playerPaddle.GetX() + _paddleWidth + _boost1Width + _boost2Width + 10 && _ball.BallPosition.X >
+                        _playerPaddle.GetX() + _paddleWidth + _boost1Width + 6 - (_gameSpeed * _ball.BallSpeed.X))
                     {
-                        if (_ball.BallPosition.Y > _playerPaddle.GetY() + _boost2Offset && _ball.BallPosition.Y < _playerPaddle.GetY() + _boost2Offset + _boost2Height)
+                        if (_ball.BallPosition.Y > _playerPaddle.GetY() + _boost2Offset && _ball.BallPosition.Y <
+                            _playerPaddle.GetY() + _boost2Offset + _boost2Height)
                             _ball.BallSpeed.X = _ball.BallSpeed.X * -3f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _playerPaddle.GetY() + _boost2Offset && _ball.BallPosition.Y + _ball._ballSize < _playerPaddle.GetY() + _boost2Offset + _boost2Height) _ball.BallSpeed.X = _ball.BallSpeed.X * -3f;
+                        else if (_ball.BallPosition.Y + _ball._ballSize > _playerPaddle.GetY() + _boost2Offset &&
+                                 _ball.BallPosition.Y + _ball._ballSize <
+                                 _playerPaddle.GetY() + _boost2Offset + _boost2Height)
+                            _ball.BallSpeed.X = _ball.BallSpeed.X * -3f;
                     }
                 }
+
                 _playerBoostState++;
             }
             //Activate Boost Cooldown
@@ -242,13 +218,20 @@ namespace MonoPong
             {
                 if (_ball.BallSpeed.X > 0)
                 {
-                    if (_ball.BallPosition.X + _ball._ballSize >= _aiPaddle.GetX() - _boost1Width - 4 && _ball.BallPosition.X + _ball._ballSize < _aiPaddle.GetX() - 4 + (_gameSpeed * _ball.BallSpeed.X))
+                    if (_ball.BallPosition.X + _ball._ballSize >= _aiPaddle.GetX() - _boost1Width - 4 &&
+                        _ball.BallPosition.X + _ball._ballSize <
+                        _aiPaddle.GetX() - 4 + (_gameSpeed * _ball.BallSpeed.X))
                     {
-                        if (_ball.BallPosition.Y > _aiPaddle.GetY() + _boost1Offset && _ball.BallPosition.Y < _aiPaddle.GetY() + _boost1Offset + _boost1Height)
+                        if (_ball.BallPosition.Y > _aiPaddle.GetY() + _boost1Offset &&
+                            _ball.BallPosition.Y < _aiPaddle.GetY() + _boost1Offset + _boost1Height)
                             _ball.BallSpeed.X = _ball.BallSpeed.X * -2f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _aiPaddle.GetY() + _boost1Offset && _ball.BallPosition.Y + _ball._ballSize < _aiPaddle.GetY() + _boost1Offset + _boost1Height) _ball.BallSpeed.X = _ball.BallSpeed.X * -2f;
+                        else if (_ball.BallPosition.Y + _ball._ballSize > _aiPaddle.GetY() + _boost1Offset &&
+                                 _ball.BallPosition.Y + _ball._ballSize <
+                                 _aiPaddle.GetY() + _boost1Offset + _boost1Height)
+                            _ball.BallSpeed.X = _ball.BallSpeed.X * -2f;
                     }
                 }
+
                 _aiBoostState++;
             }
             //Boost 2 Interaction
@@ -256,13 +239,20 @@ namespace MonoPong
             {
                 if (_ball.BallSpeed.X > 0)
                 {
-                    if (_ball.BallPosition.X + _ball._ballSize >= _aiPaddle.GetX() - _boost1Width - _boost2Width - 10 && _ball.BallPosition.X + _ball._ballSize < _aiPaddle.GetX() - _boost1Width - 6 + (_gameSpeed * _ball.BallSpeed.X))
+                    if (_ball.BallPosition.X + _ball._ballSize >= _aiPaddle.GetX() - _boost1Width - _boost2Width - 10 &&
+                        _ball.BallPosition.X + _ball._ballSize <
+                        _aiPaddle.GetX() - _boost1Width - 6 + (_gameSpeed * _ball.BallSpeed.X))
                     {
-                        if (_ball.BallPosition.Y > _aiPaddle.GetY() + _boost2Offset && _ball.BallPosition.Y < _aiPaddle.GetY() + _boost2Offset + _boost2Height)
+                        if (_ball.BallPosition.Y > _aiPaddle.GetY() + _boost2Offset &&
+                            _ball.BallPosition.Y < _aiPaddle.GetY() + _boost2Offset + _boost2Height)
                             _ball.BallSpeed.X = _ball.BallSpeed.X * -3f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _aiPaddle.GetY() + _boost2Offset && _ball.BallPosition.Y + _ball._ballSize < _aiPaddle.GetY() + _boost2Offset + _boost2Height) _ball.BallSpeed.X = _ball.BallSpeed.X * -3f;
+                        else if (_ball.BallPosition.Y + _ball._ballSize > _aiPaddle.GetY() + _boost2Offset &&
+                                 _ball.BallPosition.Y + _ball._ballSize <
+                                 _aiPaddle.GetY() + _boost2Offset + _boost2Height)
+                            _ball.BallSpeed.X = _ball.BallSpeed.X * -3f;
                     }
                 }
+
                 _aiBoostState++;
             }
             //Activate Boost Cooldown
@@ -298,6 +288,7 @@ namespace MonoPong
 
             lastKeyboardState = Keyboard.GetState();
         }
+
         /// <summary>
         /// This is called when the game should draw itself.
         /// </summary>
@@ -324,7 +315,8 @@ namespace MonoPong
                 //Boost 2 display
                 if (_playerBoostState > 10)
                 {
-                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8, _playerPaddle.GetY() + _boost2Offset);
+                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + _boost1Width + 8,
+                        _playerPaddle.GetY() + _boost2Offset);
                     _playerBoost1Sprite.Begin();
                     _playerBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
                     _playerBoost1Sprite.End();
@@ -332,15 +324,18 @@ namespace MonoPong
                 //Player Boost 1 display
                 else if (_playerBoostState > 0)
                 {
-                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4, _playerPaddle.GetY() + _boost1Offset);
+                    Vector2 boostPosition = new Vector2(_playerPaddle.GetX() + _paddleWidth + 4,
+                        _playerPaddle.GetY() + _boost1Offset);
                     _playerBoost2Sprite.Begin();
                     _playerBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
                     _playerBoost2Sprite.End();
                 }
+
                 //AI Boost 2 display
                 if (_aiBoostState > 10)
                 {
-                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - _boost2Width - 8, _aiPaddle.GetY() + _boost2Offset);
+                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - _boost2Width - 8,
+                        _aiPaddle.GetY() + _boost2Offset);
                     _aiBoost1Sprite.Begin();
                     _aiBoost1Sprite.Draw(_boost2Texture, boostPosition, Color.White);
                     _aiBoost1Sprite.End();
@@ -348,12 +343,14 @@ namespace MonoPong
                 //AI Boost 1 display
                 else if (_aiBoostState > 0)
                 {
-                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - 4, _aiPaddle.GetY() + _boost1Offset);
+                    Vector2 boostPosition = new Vector2(_aiPaddle.GetX() - _boost1Width - 4,
+                        _aiPaddle.GetY() + _boost1Offset);
                     _aiBoost2Sprite.Begin();
                     _aiBoost2Sprite.Draw(_boost1Texture, boostPosition, Color.White);
                     _aiBoost2Sprite.End();
                 }
             }
+
             base.Draw(gameTime);
         }
     }
