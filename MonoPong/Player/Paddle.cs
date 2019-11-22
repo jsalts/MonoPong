@@ -17,7 +17,6 @@ namespace MonoPong.Player
         private float _gameSpeed = 1f;
 
         private Texture2D _paddleTexture;
-        private SpriteBatch _paddleSprite;
 
         public Paddle(int x, int y)
         {
@@ -81,16 +80,13 @@ namespace MonoPong.Player
             }
         }
 
-        public void Draw()
+        public void Draw(SpriteBatch spriteBatch)
         {
-            _paddleSprite.Begin();
-            _paddleSprite.Draw(_paddleTexture, GetPosition(), Color.White);
-            _paddleSprite.End();
+            spriteBatch.Draw(_paddleTexture, GetPosition(), Color.White);
         }
 
         public void LoadContent(GraphicsDevice graphicsDevice)
         {
-            _paddleSprite = new SpriteBatch(graphicsDevice);
             _paddleTexture = new Texture2D(graphicsDevice, 20, 100);
             Color[] paddleColorData = new Color[20 * 100];
             for (int i = 0; i < 2000; i++)

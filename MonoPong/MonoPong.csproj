@@ -42,6 +42,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Effects\Boost.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Player\Ball.cs" />
     <Compile Include="Player\Paddle.cs" />

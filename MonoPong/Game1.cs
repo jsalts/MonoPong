@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoPong.Player;
+using MonoPong.Effects;
 
 namespace MonoPong
 {
@@ -100,7 +101,6 @@ namespace MonoPong
             _aiPaddle.LoadContent(GraphicsDevice);
 
             // Create a new SpriteBatch, which can be used to draw textures.
-            _ball.BallSprite = new SpriteBatch(GraphicsDevice);
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _pauseText = Content.Load<SpriteFont>("PauseText");
 
@@ -296,9 +296,9 @@ namespace MonoPong
                     _spriteBatch.DrawString(_pauseText, "PAUSED", new Vector2(200, 150), Color.White);
                 }
 
-                _playerPaddle.Draw();
-                _aiPaddle.Draw();
-                _ball.Draw();
+                _playerPaddle.Draw(_spriteBatch);
+                _aiPaddle.Draw(_spriteBatch);
+                _ball.Draw(_spriteBatch);
 
                 //Boost 2 display
                 if (_playerBoostState > 10)

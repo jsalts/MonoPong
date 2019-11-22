@@ -6,7 +6,6 @@ namespace MonoPong.Player
     public class Ball
     {
         public readonly int _ballSize = 25;
-        public SpriteBatch BallSprite { get; set; }
         public Texture2D BallTexture { get; set; }
         public float GameSpeed { get; set; }
 
@@ -19,11 +18,9 @@ namespace MonoPong.Player
             BallPosition = ballPosition;
         }
 
-        public void Draw()
+        public void Draw(SpriteBatch spriteBatch)
         {
-            BallSprite.Begin();
-            BallSprite.Draw(BallTexture, BallPosition, Color.White);
-            BallSprite.End();
+            spriteBatch.Draw(BallTexture, BallPosition, Color.White);
         }
         
         public void ColorBall(Color color)
