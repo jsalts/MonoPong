@@ -244,5 +244,11 @@ namespace MonoPong.Components
                 _boostState = -100;
             }
         }
+
+        public void CheckCollision(Ball ball)
+        {
+            if (ball.BallBox.Intersects(this.BoundingBox) && ((ball.BallSpeed.X < 0 && this._rotationDegrees == 0) || (ball.BallSpeed.X > 0 && this._rotationDegrees == 180)))
+                ball.BallSpeed.X = ball.BallSpeed.X * -1;
+        }
     }
 }

@@ -61,14 +61,14 @@ namespace MonoPong
             _paddleOne.AddDownKeys(Keys.S);
             _paddleOne.AddBoostKeys(Keys.D);
             _paddleOne.AddBoostKeys(Keys.E);
-            _paddleOne.AddRotateKeys(Keys.Right);
+            //_paddleOne.AddRotateKeys(Keys.Right);
             _paddleOne.Initialize();
 
             _paddleTwo = new Paddle(viewPortWidth - 20, viewPortHeight / 2, 180);
             _paddleTwo.AddUpKeys(Keys.Up);
             _paddleTwo.AddDownKeys(Keys.Down);
             _paddleTwo.AddBoostKeys(Keys.Left);
-            _paddleTwo.AddRotateKeys(Keys.Right);
+            //_paddleTwo.AddRotateKeys(Keys.Right);
             _paddleTwo.Initialize();
 
             _boost1Texture = new Texture2D(GraphicsDevice, _boost1Width, _boost1Height);
@@ -147,8 +147,8 @@ namespace MonoPong
                     break;
             }
             
-            PlayerBoost();
-            AiBoost();
+            //PlayerBoost();
+            //AiBoost();
 
             base.Update(gameTime);
         }
@@ -161,7 +161,7 @@ namespace MonoPong
             _ninjaStar.GameSpeed = tempSpeed;
         }
 
-        private void PlayerBoost()
+        /*private void PlayerBoost()
         {
             if (_playerBoostState < 0)
                 _playerBoostState++;
@@ -261,16 +261,18 @@ namespace MonoPong
             //Activate Boost Cooldown
             else if (_aiBoostState > 20)
                 _aiBoostState = -100;
-        }
+        }*/
 
         private void CheckCollision()
         {
-            //if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && (_ball.GetAngle() + 90) >= _paddleOne.RotationDegrees && (_ball.GetAngle() - 90) <= _paddleOne.RotationDegrees)
-            if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && _ball.BallSpeed.X < 0)
-                _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
+            _paddleOne.CheckCollision(_ball);
+            _paddleTwo.CheckCollision(_ball);
+            /*if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && (_ball.GetAngle() + 90) >= _paddleOne.RotationDegrees && (_ball.GetAngle() - 90) <= _paddleOne.RotationDegrees)
+            //if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && ((_ball.BallSpeed.X < 0 && _paddle      ) || (             &&         ))
+            //_ball.BallSpeed.X = _ball.BallSpeed.X * -1;
             //if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox) && (_ball.GetAngle() + 90) >= _paddleTwo.RotationDegrees && (_ball.GetAngle() - 90) <= _paddleTwo.RotationDegrees)
             if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox) && _ball.BallSpeed.X > 0)
-                _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
+                _ball.BallSpeed.X = _ball.BallSpeed.X * -1;*/
         }
 
         private void HandleKeystrokes()
