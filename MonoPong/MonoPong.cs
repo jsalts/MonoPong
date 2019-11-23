@@ -247,8 +247,19 @@ namespace MonoPong
         }
         private void SpawnBall()
         {
-            var newBall = new Ball(new Vector2(50, 100));
-            newBall.BallSpeed = new Vector2(1, 1);
+            Random rnd = new Random();
+            int x = rnd.Next(1, 3);
+            int y = rnd.Next(1, 3);
+            if (x == 2)
+            {
+                x = -1;
+            }
+            if (y == 2)
+            {
+                y = -1;
+            }
+            var newBall = new Ball(new Vector2(250, 200));
+            newBall.BallSpeed = new Vector2(x, y);
             newBall.BallTexture = new Texture2D(GraphicsDevice, newBall._ballSize, newBall._ballSize);
             newBall.ColorBall(Color.White);
             _balls.Add(newBall);
