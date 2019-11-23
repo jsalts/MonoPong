@@ -14,14 +14,35 @@ namespace MonoPong.Effects
         private readonly int _boostSizeY;
         public Texture2D BoostTexture { get; set; }
         private bool _boostActive;
+        public BoundingBox _boundingBox;
 
-        public Boost(float xPos, float yPos, int xSize, int ySize, int rotationDegrees)
+        public Boost(float xPos, float yPos, int width, int height, int rotationDegrees)
         {
             RotationDegrees = rotationDegrees;
             _boostPosition = new Vector2(xPos, yPos);
-            _boostSizeX = xSize;
-            _boostSizeY = ySize;
+            _boostSizeX = width;
+            _boostSizeY = height;
             _boostActive = false;
+        }
+        public BoundingBox BoundingBox
+        {
+            get
+            {
+                Vector3 topLeft = new Vector3(0,0,0);
+                Vector3 botRight = new Vector3(0,0,0);
+                if (RotationDegrees == 0)
+                {
+                    topLeft = new Vector3(_boostPosition, 0);
+                    botRight = new Vector3(_boostPosition.X + _boostSizeX, _boostPosition.Y + _boostSizeY, 0);
+                }
+                else if (RotationDegrees == 180)
+                {
+                    var rotatedX = (_boostPosition.X * Math.Cos(RotationDegrees) - (_boostPosition.Y * Math.Sin(RotationDegrees)));
+                    topLeft = new Vector3((float)rotatedX - _boostSizeX, _boostPosition.Y, 0);
+                    botRight = new Vector3((float)rotatedX,_boostPosition.Y + _boostSizeY, 0);
+                }
+                return new BoundingBox(topLeft, botRight);
+            }
         }
 
         public void SetColor(Color color)
