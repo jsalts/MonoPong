@@ -265,9 +265,11 @@ namespace MonoPong
 
         private void CheckCollision()
         {
-            if (_ball.BallBox.Intersects(_paddleOne.BoundingBox))
+            //if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && (_ball.GetAngle() + 90) >= _paddleOne.RotationDegrees && (_ball.GetAngle() - 90) <= _paddleOne.RotationDegrees)
+            if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && _ball.BallSpeed.X < 0)
                 _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
-            if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox))
+            //if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox) && (_ball.GetAngle() + 90) >= _paddleTwo.RotationDegrees && (_ball.GetAngle() - 90) <= _paddleTwo.RotationDegrees)
+            if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox) && _ball.BallSpeed.X > 0)
                 _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
         }
 
@@ -315,7 +317,7 @@ namespace MonoPong
                 {
                     _spriteBatch.DrawString(_pauseText, "PAUSED", new Vector2(200, 150), Color.White);
                 }
-
+                //_spriteBatch.DrawString(_pauseText, _ball.GetAngle().ToString(), new Vector2(0, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
                 _paddleTwo.Draw(_spriteBatch);
                 _ball.Draw(_spriteBatch);

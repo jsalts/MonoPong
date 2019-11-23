@@ -124,10 +124,10 @@ namespace MonoPong.Components
 
         private void MovePaddle(float ySpeed)
         {
-            if (_paddlePosition.Y - ySpeed <= 0 && ySpeed < 0)
-                ySpeed = 0 - _paddlePosition.Y;
-            if (_paddlePosition.Y + ySpeed >= 380 && ySpeed > 0)
-                ySpeed = 380 - _paddlePosition.Y;
+            if (_paddlePosition.Y - ySpeed <= 0 + (_paddleHeight / 2) && ySpeed < 0)
+                ySpeed = 0 + (_paddleHeight / 2) - _paddlePosition.Y;
+            if (_paddlePosition.Y + ySpeed >= 380 + (_paddleHeight / 2) && ySpeed > 0)
+                ySpeed = 380 + (_paddleHeight / 2) - _paddlePosition.Y;
 
             _paddlePosition.Y += ySpeed;
         }

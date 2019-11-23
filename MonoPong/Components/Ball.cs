@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoPong.Components
@@ -32,6 +33,12 @@ namespace MonoPong.Components
         {
             spriteBatch.Draw(BallTexture, BallPosition, Color.White);
         }
+
+        public float GetAngle()
+        {
+            float radian = (float)Math.Atan2(BallSpeed.Y, BallSpeed.X);
+            return radian * (float)(180 / Math.PI);
+        }
         
         public void ColorBall(Color color)
         {
@@ -54,7 +61,7 @@ namespace MonoPong.Components
             var leftX = BallPosition.X;
             var right = BallPosition.X + _ballSize;
             
-            if (right >= aiPaddle.GetX() && right < aiPaddle.GetX() + (GameSpeed * BallSpeed.X))
+            /*if (right >= aiPaddle.GetX() && right < aiPaddle.GetX() + (GameSpeed * BallSpeed.X))
             {
                 if (BallPosition.Y > aiPaddle.GetY() && BallPosition.Y < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
                 if (BallPosition.Y + _ballSize > aiPaddle.GetY() && BallPosition.Y + _ballSize < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
@@ -65,7 +72,7 @@ namespace MonoPong.Components
                 if (BallPosition.Y > playerPaddle.GetY() && BallPosition.Y < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
                 if (BallPosition.Y + _ballSize > playerPaddle.GetY() && BallPosition.Y + _ballSize < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
             }
-
+            */
             
 
             //Check for bottom collision
