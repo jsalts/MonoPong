@@ -128,7 +128,10 @@ namespace MonoPong
                 case "game":
                     _balls.ForEach(b => b.DetermineBallPosition(GraphicsDevice));
 
-                    CheckCollision();
+                    if (CheckCollision())
+                    {
+                        SpawnBall();
+                    }
                     _paddleOne.ManageBoost();
                     _paddleTwo.ManageBoost();
                     break;
@@ -147,13 +150,33 @@ namespace MonoPong
             _balls.ForEach(b => b.GameSpeed = tempSpeed);
         }
 
-        private void CheckCollision()
+        private bool CheckCollision()
         {
+            bool spawn = false;
+
             _balls.ForEach(b =>
             {
-                _paddleOne.CheckCollision(b);
-                _paddleTwo.CheckCollision(b);
+                int result;
+                result = _paddleOne.CheckCollision(b);
+                if (result >= 2)
+                {
+                    spawn = true;
+                }
+                if (result >= 1)
+                {
+                    b.BallSpeed.X = b.BallSpeed.X * -1 * result;
+                }
+                result = _paddleTwo.CheckCollision(b);
+                if (result >= 2)
+                {
+                    spawn = true;
+                }
+                if (result >= 1)
+                {
+                    b.BallSpeed.X = b.BallSpeed.X * -1 * result;
+                }
             });
+            return spawn;
         }
 
         private void SpawnBall()

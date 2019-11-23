@@ -247,22 +247,26 @@ namespace MonoPong.Components
             }
         }
 
-        public void CheckCollision(Ball ball)
+        public int CheckCollision(Ball ball)
         {
             bool isLeftPaddle = _rotationDegrees == 0;
             bool isRightPaddle = _rotationDegrees == 180;
 
             if (ball.BallBox.Intersects(_boost2.BoundingBox) && _boost2.Status() && (ball.BallSpeed.X < 0 && isLeftPaddle || ball.BallSpeed.X > 0 && isRightPaddle))
             {
-                ball.BallSpeed.X = ball.BallSpeed.X * -3;
+                return 3;
             }
             else if (ball.BallBox.Intersects(_boost1.BoundingBox) && _boost1.Status() && (ball.BallSpeed.X < 0 && isLeftPaddle || ball.BallSpeed.X > 0 && isRightPaddle))
             {
-                ball.BallSpeed.X = ball.BallSpeed.X * -2;
+                return 2;
             }
             else if (ball.BallBox.Intersects(BoundingBox) && (ball.BallSpeed.X < 0 && isLeftPaddle || ball.BallSpeed.X > 0 && isRightPaddle))
             {
-                ball.BallSpeed.X = ball.BallSpeed.X * -1;
+                return 1;
+            }
+            else
+            {
+                return -1;
             }
         }
     }
