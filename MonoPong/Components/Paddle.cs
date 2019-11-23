@@ -67,6 +67,7 @@ namespace MonoPong.Components
             
             RotationDegrees = rotationDegrees;
             _boost1 = new Boost(
+                this,
                 _paddleWidth + 4,
                 (_paddleHeight - _boost1Height) / 2f,
                 _boost1Width,
@@ -74,6 +75,7 @@ namespace MonoPong.Components
                 rotationDegrees);
 
             _boost2 = new Boost(
+                this,
                 _paddleWidth + 8 + _boost1Width,
                 (_paddleHeight - _boost2Height) / 2f,
                 _boost2Width,
@@ -187,12 +189,12 @@ namespace MonoPong.Components
 
             if (_boost1.Status())
             {
-                _boost1.Draw(spriteBatch, this);
+                _boost1.Draw(spriteBatch);
             }
 
             if (_boost2.Status())
             {
-                _boost2.Draw(spriteBatch, this);
+                _boost2.Draw(spriteBatch);
             }
         }
 
