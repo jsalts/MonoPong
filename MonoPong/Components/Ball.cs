@@ -12,17 +12,20 @@ namespace MonoPong.Components
         public Vector2 BallPosition;
         
         public Vector2 BallSpeed;
-        public BoundingBox _ballBox;
-        
+        private BoundingBox BallBox
+        {
+            get
+            {
+                return new BoundingBox(
+                    new Vector3(BallPosition, 0),
+                    new Vector3(BallPosition.X + _ballSize, BallPosition.Y + _ballSize, 0
+                ));
+            }
+        }
+
         public Ball(Vector2 ballPosition)
         {
             BallPosition = ballPosition;
-            _ballBox = new BoundingBox();
-        }
-
-        public void CreateBox()
-        {
-            _ballBox = new BoundingBox(new Vector3(BallPosition, 0), new Vector3(BallPosition.X + _ballSize, BallPosition.Y + _ballSize, 0));
         }
 
         public void Draw(SpriteBatch spriteBatch)

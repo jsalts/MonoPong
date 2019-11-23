@@ -37,6 +37,20 @@ namespace MonoPong.Components
         private Vector2 _paddlePosition;
         private float _gameSpeed = 1f;
 
+        public BoundingBox BoundingBox
+        {
+            get
+            {
+                var left = _paddlePosition.X - _paddleWidth / 2f;
+                var top = _paddlePosition.Y - _paddleHeight / 2f;
+                var topLeft = new Vector3(left, top, 0);
+                var right = _paddlePosition.X + _paddleWidth / 2f;
+                var bottom = _paddlePosition.Y + _boost2Height / 2f;
+                var bottomRight = new Vector3(right, bottom, 0);
+                return new BoundingBox(topLeft, bottomRight);
+            }
+        }
+
         private Texture2D PaddleTexture { get; set; }
         private readonly Boost _boost1;
         private readonly Boost _boost2;
