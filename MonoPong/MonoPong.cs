@@ -10,6 +10,7 @@ namespace MonoPong
     public class Game1 : Game
     {
         private float _gameSpeed = 5f;
+        private int _speedUpTimer = 0;
         private double _score;
         private double _highScore;
         private int _maxBalls;
@@ -144,6 +145,7 @@ namespace MonoPong
                     _paddleTwo.ManageBoost();
                     ClearOOB();
                     UpdateScore();
+                    SpeedUp();
                     if (_balls.Count == 0)
                         _gameState = gameStates.lose;
                     break;
@@ -229,6 +231,16 @@ namespace MonoPong
                 _maxBalls = _balls.Count;
             }
         }
+
+        private void SpeedUp()
+        {
+            _speedUpTimer++;
+            if (_speedUpTimer > 500)
+            {
+                _gameSpeed = (float)Math.Round(_gameSpeed + .1, 1);
+                _speedUpTimer = 0;
+            }
+        }
         private void SpawnBall()
         {
             var newBall = new Ball(new Vector2(50, 100));
@@ -300,6 +312,7 @@ namespace MonoPong
                 }
                 //Draw Top Status
                 _spriteBatch.DrawString(_scoreText, "Score: " + _score, new Vector2(10, 0), Color.White);
+                _spriteBatch.DrawString(_scoreText, "Speed: " + _gameSpeed, new Vector2(350, 0), Color.White);
                 _spriteBatch.DrawString(_scoreText, "Balls: " + _balls.Count.ToString(), new Vector2(620, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
                 _paddleTwo.Draw(_spriteBatch);
