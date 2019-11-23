@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -9,6 +10,9 @@ namespace MonoPong
     public class Game1 : Game
     {
         private float _gameSpeed = 5f;
+        private double _score;
+        private double _highScore;
+        private int _maxBalls;
 
         private int _boost1Width = 12;
         private int _boost2Width = 10;
@@ -139,12 +143,17 @@ namespace MonoPong
                     _paddleOne.ManageBoost();
                     _paddleTwo.ManageBoost();
                     ClearOOB();
+                    UpdateScore();
                     if (_balls.Count == 0)
                         _gameState = gameStates.lose;
                     break;
                 case gameStates.pause:
                     break;
                 case gameStates.lose:
+                    if (_score > _highScore)
+                    {
+                        _highScore = _score;
+                    }
                     if (_balls.Count > 0)
                     {
                         _gameState = gameStates.game;
@@ -206,6 +215,20 @@ namespace MonoPong
             _balls.RemoveAll(ball => ball.OOB == true);
         }
 
+        private void Restart()
+        {
+            _score = 0;
+            SpawnBall();
+            _gameState = gameStates.game;
+        }
+        private void UpdateScore()
+        {
+            _score += Math.Pow(2, _balls.Count);
+            if (_balls.Count > _maxBalls )
+            {
+                _maxBalls = _balls.Count;
+            }
+        }
         private void SpawnBall()
         {
             var newBall = new Ball(new Vector2(50, 100));
@@ -222,15 +245,6 @@ namespace MonoPong
             {
                 Exit();
             }
-
-            if (Keyboard.GetState().IsKeyDown(Keys.Z) || Keyboard.GetState().IsKeyDown(Keys.OemSemicolon))
-            {
-                if (_balls.Count == 0)
-                {
-                    SpawnBall();
-                }
-            }
-                
 
             switch (_gameState)
             {
@@ -249,6 +263,12 @@ namespace MonoPong
                     {
                         _gameState = gameStates.game;
                         UpdateGameSpeed(_gameSpeed);
+                    }
+                    break;
+                case gameStates.lose:
+                    if (Keyboard.GetState().IsKeyDown(Keys.Z) || Keyboard.GetState().IsKeyDown(Keys.OemSemicolon))
+                    {
+                        Restart();
                     }
                     break;
             }
@@ -272,11 +292,14 @@ namespace MonoPong
                 }
                 if (_gameState == gameStates.lose)
                 {
-                    _spriteBatch.DrawString(_pauseText, "GAME OVER", new Vector2(120, 120), Color.White);
-                    _spriteBatch.DrawString(_pauseText, "Z to Retry", new Vector2(200, 250), Color.White);
+                    _spriteBatch.DrawString(_pauseText, "GAME OVER", new Vector2(120, 100), Color.White);
+                    _spriteBatch.DrawString(_pauseText, "Z to Retry", new Vector2(200, 210), Color.White);
+                    _spriteBatch.DrawString(_scoreText, "High Score: " + _highScore, new Vector2(250, 340), Color.White);
+                    _spriteBatch.DrawString(_scoreText, "Max Balls: " + _maxBalls, new Vector2(300, 400), Color.White);
+
                 }
                 //Draw Top Status
-                _spriteBatch.DrawString(_scoreText, "Score: " + "000", new Vector2(10, 0), Color.White);
+                _spriteBatch.DrawString(_scoreText, "Score: " + _score, new Vector2(10, 0), Color.White);
                 _spriteBatch.DrawString(_scoreText, "Balls: " + _balls.Count.ToString(), new Vector2(620, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
                 _paddleTwo.Draw(_spriteBatch);
