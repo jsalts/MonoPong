@@ -14,8 +14,6 @@ namespace MonoPong
         private int _boost2Width = 10;
         private int _boost1Height = 50;
         private int _boost2Height = 26;
-        private int _paddleWidth = 20;
-        private int _paddleHeight = 100;
 
         private string _gameState = "game";
 
@@ -25,11 +23,7 @@ namespace MonoPong
         Texture2D _boost2Texture;
         Paddle _paddleOne;
         Paddle _paddleTwo;
-        private int _boost1Offset;
-        private int _boost2Offset;
-        private List<Ball> _balls = new List<Ball>();
-        private int _ballCounter = 0;
-        private Ball _ball;
+        private readonly List<Ball> _balls = new List<Ball>();
         KeyboardState _lastKeyboardState;
         private NinjaStar _ninjaStar;
 
@@ -53,7 +47,7 @@ namespace MonoPong
 
             _ninjaStar = new NinjaStar(new Vector2(viewPortWidth / 2f, viewPortHeight / 2f));
             
-            _paddleOne = new Paddle(20, viewPortHeight/2, 0);
+            _paddleOne = new Paddle(20, viewPortHeight / 2f, 0);
             _paddleOne.AddUpKeys(Keys.W);
             _paddleOne.AddUpKeys(Keys.OemComma);
             _paddleOne.AddDownKeys(Keys.O);
@@ -63,7 +57,7 @@ namespace MonoPong
             //_paddleOne.AddRotateKeys(Keys.Right);
             _paddleOne.Initialize();
 
-            _paddleTwo = new Paddle(viewPortWidth - 20, viewPortHeight / 2, 180);
+            _paddleTwo = new Paddle(viewPortWidth - 20, viewPortHeight / 2f, 180);
             _paddleTwo.AddUpKeys(Keys.Up);
             _paddleTwo.AddDownKeys(Keys.Down);
             _paddleTwo.AddBoostKeys(Keys.Left);
@@ -90,9 +84,6 @@ namespace MonoPong
 
             base.Initialize();
 
-            _boost1Offset = (_paddleHeight - _boost1Height) / 2;
-            _boost2Offset = (_paddleHeight - _boost2Height) / 2;
-            
             UpdateGameSpeed(_gameSpeed);
         }
 
@@ -129,15 +120,14 @@ namespace MonoPong
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            UpdateGameSpeed(_gameSpeed);
             HandleKeystrokes();
 
             switch (_gameState)
             {
                 case "game":
-                    foreach (var ball in _balls)
-                    {
-                        ball.DetermineBallPosition(_paddleTwo, _paddleOne, _paddleHeight, _paddleWidth, GraphicsDevice);
-                    }
+                    _balls.ForEach(b => b.DetermineBallPosition(GraphicsDevice));
+
                     CheckCollision();
                     _paddleOne.ManageBoost();
                     _paddleTwo.ManageBoost();
@@ -153,37 +143,42 @@ namespace MonoPong
         {
             _paddleTwo.GameSpeed = tempSpeed;
             _paddleOne.GameSpeed = tempSpeed;
-            foreach (var ball in _balls)
-                ball.GameSpeed = tempSpeed;
             _ninjaStar.GameSpeed = tempSpeed;
+            _balls.ForEach(b => b.GameSpeed = tempSpeed);
         }
 
         private void CheckCollision()
         {
-            foreach (var ball in _balls)
-                _paddleOne.CheckCollision(ball);
-            foreach (var ball in _balls)
-                _paddleTwo.CheckCollision(ball);
+            _balls.ForEach(b =>
+            {
+                _paddleOne.CheckCollision(b);
+                _paddleTwo.CheckCollision(b);
+            });
         }
 
         private void SpawnBall()
         {
-            int i = _balls.Count;
-            _balls.Add(new Ball(new Vector2(50, 100)));
-            _balls[i].BallSpeed = new Vector2(1, 1);
-            _balls[i].BallTexture = new Texture2D(GraphicsDevice, _balls[i]._ballSize, _balls[i]._ballSize);
-            _balls[i].ColorBall(Color.White);
-
+            var newBall = new Ball(new Vector2(50, 100));
+            newBall.BallSpeed = new Vector2(1, 1);
+            newBall.BallTexture = new Texture2D(GraphicsDevice, newBall._ballSize, newBall._ballSize);
+            newBall.ColorBall(Color.White);
+            _balls.Add(newBall);
+            _balls.Add(newBall);
         }
 
         private void HandleKeystrokes()
         {
             //Quit the game anytime escape is pressed
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
                 Exit();
+            }
 
             if (Keyboard.GetState().IsKeyDown(Keys.Z) || Keyboard.GetState().IsKeyDown(Keys.OemSemicolon))
+            {
                 SpawnBall();
+            }
+                
 
             switch (_gameState)
             {
@@ -226,8 +221,9 @@ namespace MonoPong
                 //_spriteBatch.DrawString(_pauseText, _ball.GetAngle().ToString(), new Vector2(0, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
                 _paddleTwo.Draw(_spriteBatch);
-                foreach (var ball in _balls)
-                    ball.Draw(_spriteBatch);
+                
+                _balls.ForEach(b => b.Draw(_spriteBatch));
+
                 _ninjaStar.Draw(_spriteBatch);
             }
             _spriteBatch.End();

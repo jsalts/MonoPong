@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoPong.Components
@@ -24,6 +23,7 @@ namespace MonoPong.Components
 
         public Ball(Vector2 ballPosition)
         {
+            GameSpeed = 1f;
             BallPosition = ballPosition;
         }
 
@@ -43,7 +43,7 @@ namespace MonoPong.Components
             BallTexture.SetData(ballColorData);
         }
 
-        public void DetermineBallPosition(Paddle aiPaddle, Paddle playerPaddle, int paddleHeight, int paddleWidth, GraphicsDevice graphicsDevice)
+        public void DetermineBallPosition(GraphicsDevice graphicsDevice)
         {
             //Move ball
             BallPosition.X += BallSpeed.X * GameSpeed;
