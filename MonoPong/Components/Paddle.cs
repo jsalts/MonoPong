@@ -29,13 +29,13 @@ namespace MonoPong.Components
         }
 
         private int _paddleWidth = 21;
-        private int _paddleHeight = 101;
+        private int _paddleHeight = 151;
         private readonly List<Keys> _upKeys = new List<Keys>();
         private readonly List<Keys> _downKeys = new List<Keys>();
         private readonly List<Keys> _boostKeys = new List<Keys>();
         private readonly List<Keys> _rotateKeys = new List<Keys>();
         private Vector2 _paddlePosition;
-        private float _gameSpeed = 1f;
+        //private float _gameSpeed = 1f;
 
         public BoundingBox BoundingBox
         {
@@ -83,11 +83,11 @@ namespace MonoPong.Components
                 rotationDegrees);
         }
 
-        public float GameSpeed
+        /*public float GameSpeed
         {
             get { return _gameSpeed; }
             set { _gameSpeed = value; }
-        }
+        }*/
 
         public void AddUpKeys(Keys key)
         {
@@ -143,12 +143,12 @@ namespace MonoPong.Components
 
             if (upPressed)
             {
-                MovePaddle(-1.5f * GameSpeed);
+                MovePaddle(-10f);
             }
 
             if (downPressed)
             {
-                MovePaddle(1.5f * GameSpeed);
+                MovePaddle(10);
             }
 
             if (boostPressed && _boostState == 0)

@@ -8,6 +8,7 @@ namespace MonoPong.Components
         public readonly int _ballSize = 25;
         public Texture2D BallTexture { get; set; }
         public float GameSpeed { get; set; }
+        public bool OOB { get; set; }
         public Vector2 BallPosition;       
         public Vector2 BallSpeed;
         public BoundingBox BallBox
@@ -23,6 +24,7 @@ namespace MonoPong.Components
 
         public Ball(Vector2 ballPosition)
         {
+            OOB = false;
             GameSpeed = 1f;
             BallPosition = ballPosition;
         }
@@ -62,15 +64,6 @@ namespace MonoPong.Components
             if (BallPosition.Y < 0)
             {
                 BallSpeed.Y = 1;
-            }
-            
-            if (leftX < 0)
-            {
-                BallSpeed.X = 1;
-            }
-            if (right > graphicsDevice.Viewport.Width)
-            {
-                BallSpeed.X = -1;
             }
 
             //Update Ball Color

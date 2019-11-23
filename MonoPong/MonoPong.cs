@@ -15,7 +15,8 @@ namespace MonoPong
         private int _boost1Height = 50;
         private int _boost2Height = 26;
 
-        private string _gameState = "game";
+        private enum gameStates { menu, game, pause, lose };
+        private gameStates _gameState;
 
         SpriteBatch _spriteBatch;
         SpriteFont _pauseText;
@@ -25,7 +26,7 @@ namespace MonoPong
         Paddle _paddleTwo;
         private readonly List<Ball> _balls = new List<Ball>();
         KeyboardState _lastKeyboardState;
-        private NinjaStar _ninjaStar;
+        //private NinjaStar _ninjaStar;
 
         public Game1()
         {
@@ -41,11 +42,12 @@ namespace MonoPong
         /// </summary>
         protected override void Initialize()
         {
+            _gameState = gameStates.game;
             var viewPortHeight = GraphicsDevice.Viewport.Height;
             var viewPortWidth = GraphicsDevice.Viewport.Width;
             SpawnBall();
 
-            _ninjaStar = new NinjaStar(new Vector2(viewPortWidth / 2f, viewPortHeight / 2f));
+            //_ninjaStar = new NinjaStar(new Vector2(viewPortWidth / 2f, viewPortHeight / 2f));
             
             _paddleOne = new Paddle(20, viewPortHeight / 2f, 0);
             _paddleOne.AddUpKeys(Keys.W);
@@ -95,7 +97,7 @@ namespace MonoPong
         {
             _paddleOne.LoadContent(GraphicsDevice);
             _paddleTwo.LoadContent(GraphicsDevice);
-            _ninjaStar.LoadContent(GraphicsDevice);
+            //_ninjaStar.LoadContent(GraphicsDevice);
 
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -125,7 +127,7 @@ namespace MonoPong
 
             switch (_gameState)
             {
-                case "game":
+                case gameStates.game:
                     _balls.ForEach(b => b.DetermineBallPosition(GraphicsDevice));
 
                     if (CheckCollision())
@@ -134,8 +136,17 @@ namespace MonoPong
                     }
                     _paddleOne.ManageBoost();
                     _paddleTwo.ManageBoost();
+                    ClearOOB();
+                    if (_balls.Count == 0)
+                        _gameState = gameStates.lose;
                     break;
-                case "pause":
+                case gameStates.pause:
+                    break;
+                case gameStates.lose:
+                    if (_balls.Count > 0)
+                    {
+                        _gameState = gameStates.game;
+                    }
                     break;
             }
 
@@ -144,9 +155,9 @@ namespace MonoPong
 
         private void UpdateGameSpeed(float tempSpeed)
         {
-            _paddleTwo.GameSpeed = tempSpeed;
-            _paddleOne.GameSpeed = tempSpeed;
-            _ninjaStar.GameSpeed = tempSpeed;
+            //_paddleTwo.GameSpeed = tempSpeed;
+            //_paddleOne.GameSpeed = tempSpeed;
+            //_ninjaStar.GameSpeed = tempSpeed;
             _balls.ForEach(b => b.GameSpeed = tempSpeed);
         }
 
@@ -156,6 +167,7 @@ namespace MonoPong
 
             _balls.ForEach(b =>
             {
+                //Check paddle 1
                 int result;
                 result = _paddleOne.CheckCollision(b);
                 if (result >= 2)
@@ -167,6 +179,7 @@ namespace MonoPong
                     b.BallSpeed.X = b.BallSpeed.X * -1 * result;
                 }
                 result = _paddleTwo.CheckCollision(b);
+                //check paddle 2
                 if (result >= 2)
                 {
                     spawn = true;
@@ -179,13 +192,24 @@ namespace MonoPong
             return spawn;
         }
 
+        private void ClearOOB()
+        {
+            _balls.ForEach(b =>
+            {
+                if (b.BallPosition.X < 0 || b.BallPosition.X > GraphicsDevice.Viewport.Width)
+                {
+                    b.OOB = true;
+                }
+            });
+            _balls.RemoveAll(ball => ball.OOB == true);
+        }
+
         private void SpawnBall()
         {
             var newBall = new Ball(new Vector2(50, 100));
             newBall.BallSpeed = new Vector2(1, 1);
             newBall.BallTexture = new Texture2D(GraphicsDevice, newBall._ballSize, newBall._ballSize);
             newBall.ColorBall(Color.White);
-            _balls.Add(newBall);
             _balls.Add(newBall);
         }
 
@@ -199,26 +223,29 @@ namespace MonoPong
 
             if (Keyboard.GetState().IsKeyDown(Keys.Z) || Keyboard.GetState().IsKeyDown(Keys.OemSemicolon))
             {
-                SpawnBall();
+                if (_balls.Count == 0)
+                {
+                    SpawnBall();
+                }
             }
                 
 
             switch (_gameState)
             {
-                case "game":
+                case gameStates.game:
                     _paddleOne.HandleKeystrokes();
                     _paddleTwo.HandleKeystrokes();
 
                     if (!Keyboard.GetState().IsKeyDown(Keys.Space) & _lastKeyboardState.IsKeyDown(Keys.Space))
                     {
-                        _gameState = "pause";
+                        _gameState = gameStates.pause;
                         UpdateGameSpeed(0);
                     }
                     break;
-                case "pause":
+                case gameStates.pause:
                     if (!Keyboard.GetState().IsKeyDown(Keys.Space) & _lastKeyboardState.IsKeyDown(Keys.Space))
                     {
-                        _gameState = "game";
+                        _gameState = gameStates.game;
                         UpdateGameSpeed(_gameSpeed);
                     }
                     break;
@@ -235,19 +262,24 @@ namespace MonoPong
         {
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
-            if (_gameState == "game" || _gameState == "pause")
+            if (_gameState == gameStates.game || _gameState == gameStates.pause || _gameState == gameStates.lose)
             {
-                if (_gameState == "pause")
+                if (_gameState == gameStates.pause)
                 {
-                    _spriteBatch.DrawString(_pauseText, "PAUSED", new Vector2(200, 150), Color.White);
+                    _spriteBatch.DrawString(_pauseText, "PAUSED", new Vector2(200, 170), Color.White);
                 }
-                //_spriteBatch.DrawString(_pauseText, _ball.GetAngle().ToString(), new Vector2(0, 0), Color.White);
+                if (_gameState == gameStates.lose)
+                {
+                    _spriteBatch.DrawString(_pauseText, "GAME OVER", new Vector2(120, 120), Color.White);
+                    _spriteBatch.DrawString(_pauseText, "Z to Retry", new Vector2(200, 250), Color.White);
+                }
+                _spriteBatch.DrawString(_pauseText, _balls.Count.ToString(), new Vector2(0, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
                 _paddleTwo.Draw(_spriteBatch);
                 
                 _balls.ForEach(b => b.Draw(_spriteBatch));
 
-                _ninjaStar.Draw(_spriteBatch);
+                //_ninjaStar.Draw(_spriteBatch);
             }
             _spriteBatch.End();
             base.Draw(gameTime);
