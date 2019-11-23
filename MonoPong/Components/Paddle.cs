@@ -45,7 +45,7 @@ namespace MonoPong.Components
                 var top = _paddlePosition.Y - _paddleHeight / 2f;
                 var topLeft = new Vector3(left, top, 0);
                 var right = _paddlePosition.X + _paddleWidth / 2f;
-                var bottom = _paddlePosition.Y + _boost2Height / 2f;
+                var bottom = _paddlePosition.Y + _paddleHeight / 2f;
                 var bottomRight = new Vector3(right, bottom, 0);
                 return new BoundingBox(topLeft, bottomRight);
             }
