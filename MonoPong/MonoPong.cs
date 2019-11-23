@@ -139,6 +139,7 @@ namespace MonoPong
             {
                 case "game":
                     _ball.DetermineBallPosition(_paddleTwo, _paddleOne, _paddleHeight, _paddleWidth, GraphicsDevice);
+                    CheckCollision();
                     _paddleOne.ManageBoost();
                     _paddleTwo.ManageBoost();
                     break;
@@ -260,6 +261,14 @@ namespace MonoPong
             //Activate Boost Cooldown
             else if (_aiBoostState > 20)
                 _aiBoostState = -100;
+        }
+
+        private void CheckCollision()
+        {
+            if (_ball.BallBox.Intersects(_paddleOne.BoundingBox))
+                _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
+            if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox))
+                _ball.BallSpeed.X = _ball.BallSpeed.X * -1;
         }
 
         private void HandleKeystrokes()

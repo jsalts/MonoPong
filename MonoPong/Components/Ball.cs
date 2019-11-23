@@ -12,7 +12,7 @@ namespace MonoPong.Components
         public Vector2 BallPosition;
         
         public Vector2 BallSpeed;
-        private BoundingBox BallBox
+        public BoundingBox BallBox
         {
             get
             {
@@ -65,6 +65,9 @@ namespace MonoPong.Components
                 if (BallPosition.Y > playerPaddle.GetY() && BallPosition.Y < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
                 if (BallPosition.Y + _ballSize > playerPaddle.GetY() && BallPosition.Y + _ballSize < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
             }
+
+            
+
             //Check for bottom collision
             if (BallPosition.Y + _ballSize > 480)
             {
@@ -84,7 +87,6 @@ namespace MonoPong.Components
             {
                 BallSpeed.X *= -1;
             }
-
 
             //Update Ball Color
             if (BallSpeed.X > 2 || BallSpeed.X < -2)
