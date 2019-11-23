@@ -57,7 +57,7 @@ namespace MonoPong.Effects
                 null, 
                 Color.White, 
                 RotationDegrees * (float)Math.PI / 180,
-                -_boostPosition, 
+                new Vector2(-_boostPosition.X, BoostTexture.Height / 2f), 
                 1, 
                 SpriteEffects.None, 
                 1);

@@ -37,7 +37,7 @@ namespace MonoPong.Components
         private Vector2 _paddlePosition;
         private float _gameSpeed = 1f;
 
-        private Texture2D _paddleTexture;
+        private Texture2D PaddleTexture { get; set; }
         private readonly Boost _boost1;
         private readonly Boost _boost2;
         private int _boost1Width = 12;
@@ -52,7 +52,6 @@ namespace MonoPong.Components
             _paddlePosition = new Vector2(x, y);
             
             RotationDegrees = rotationDegrees;
-
             _boost1 = new Boost(
                 _paddleWidth + 4,
                 (_paddleHeight - _boost1Height) / 2f,
@@ -155,18 +154,19 @@ namespace MonoPong.Components
                 paddleColorData[i] = color;
             }
 
-            _paddleTexture.SetData(paddleColorData);
+            PaddleTexture.SetData(paddleColorData);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
+        
             spriteBatch.Draw(
-                _paddleTexture,
+                PaddleTexture,
                 GetPosition(),
                 null,
                 Color.White,
                 RotationDegrees * (float) Math.PI / 180,
-                new Vector2(0, 0),
+                new Vector2(_paddleWidth / 2f, _paddleHeight / 2f),
                 1,
                 SpriteEffects.None,
                 1);
@@ -185,7 +185,7 @@ namespace MonoPong.Components
         public void LoadContent(GraphicsDevice graphicsDevice)
         {
             //Set up Paddle
-            _paddleTexture = new Texture2D(graphicsDevice, _paddleWidth, _paddleHeight);
+            PaddleTexture = new Texture2D(graphicsDevice, _paddleWidth, _paddleHeight);
             SetColor(Color.White);
 
             //Set up Boost 1
