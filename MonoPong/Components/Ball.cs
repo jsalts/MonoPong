@@ -66,11 +66,11 @@ namespace MonoPong.Components
             
             if (leftX < 0)
             {
-                BallSpeed.X *= -1;
+                BallSpeed.X = 1;
             }
             if (right > graphicsDevice.Viewport.Width)
             {
-                BallSpeed.X *= -1;
+                BallSpeed.X = -1;
             }
 
             //Update Ball Color

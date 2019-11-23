@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoPong.Components;
@@ -26,6 +27,8 @@ namespace MonoPong
         Paddle _paddleTwo;
         private int _boost1Offset;
         private int _boost2Offset;
+        private List<Ball> _balls = new List<Ball>();
+        private int _ballCounter = 0;
         private Ball _ball;
         KeyboardState _lastKeyboardState;
         private NinjaStar _ninjaStar;
@@ -46,9 +49,7 @@ namespace MonoPong
         {
             var viewPortHeight = GraphicsDevice.Viewport.Height;
             var viewPortWidth = GraphicsDevice.Viewport.Width;
-            _ball = new Ball(new Vector2(50, 100));
-            _ball.BallTexture = new Texture2D(GraphicsDevice, _ball._ballSize, _ball._ballSize);
-            _ball.ColorBall(Color.White);
+            SpawnBall();
 
             _ninjaStar = new NinjaStar(new Vector2(viewPortWidth / 2f, viewPortHeight / 2f));
             
@@ -89,7 +90,6 @@ namespace MonoPong
 
             base.Initialize();
 
-            _ball.BallSpeed = new Vector2(1, 1);
             _boost1Offset = (_paddleHeight - _boost1Height) / 2;
             _boost2Offset = (_paddleHeight - _boost2Height) / 2;
             
@@ -134,7 +134,10 @@ namespace MonoPong
             switch (_gameState)
             {
                 case "game":
-                    _ball.DetermineBallPosition(_paddleTwo, _paddleOne, _paddleHeight, _paddleWidth, GraphicsDevice);
+                    foreach (var ball in _balls)
+                    {
+                        ball.DetermineBallPosition(_paddleTwo, _paddleOne, _paddleHeight, _paddleWidth, GraphicsDevice);
+                    }
                     CheckCollision();
                     _paddleOne.ManageBoost();
                     _paddleTwo.ManageBoost();
@@ -150,14 +153,27 @@ namespace MonoPong
         {
             _paddleTwo.GameSpeed = tempSpeed;
             _paddleOne.GameSpeed = tempSpeed;
-            _ball.GameSpeed = tempSpeed;
+            foreach (var ball in _balls)
+                ball.GameSpeed = tempSpeed;
             _ninjaStar.GameSpeed = tempSpeed;
         }
 
         private void CheckCollision()
         {
-            _paddleOne.CheckCollision(_ball);
-            _paddleTwo.CheckCollision(_ball);
+            foreach (var ball in _balls)
+                _paddleOne.CheckCollision(ball);
+            foreach (var ball in _balls)
+                _paddleTwo.CheckCollision(ball);
+        }
+
+        private void SpawnBall()
+        {
+            int i = _balls.Count;
+            _balls.Add(new Ball(new Vector2(50, 100)));
+            _balls[i].BallSpeed = new Vector2(1, 1);
+            _balls[i].BallTexture = new Texture2D(GraphicsDevice, _balls[i]._ballSize, _balls[i]._ballSize);
+            _balls[i].ColorBall(Color.White);
+
         }
 
         private void HandleKeystrokes()
@@ -207,7 +223,8 @@ namespace MonoPong
                 //_spriteBatch.DrawString(_pauseText, _ball.GetAngle().ToString(), new Vector2(0, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
                 _paddleTwo.Draw(_spriteBatch);
-                _ball.Draw(_spriteBatch);
+                foreach (var ball in _balls)
+                    ball.Draw(_spriteBatch);
                 _ninjaStar.Draw(_spriteBatch);
             }
             _spriteBatch.End();
