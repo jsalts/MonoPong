@@ -219,6 +219,8 @@ namespace MonoPong
 
         private void Restart()
         {
+            _gameSpeed = 5f;
+            _speedUpTimer = 0;
             _score = 0;
             SpawnBall();
             _gameState = gameStates.game;
@@ -234,10 +236,12 @@ namespace MonoPong
 
         private void SpeedUp()
         {
+            int target = 250; // How many update cycles between speed increases
+            double speedMulti = .1; // How much to increase game speed by
             _speedUpTimer++;
-            if (_speedUpTimer > 500)
+            if (_speedUpTimer > target)
             {
-                _gameSpeed = (float)Math.Round(_gameSpeed + .1, 1);
+                _gameSpeed = (float)Math.Round(_gameSpeed + speedMulti, 1);
                 _speedUpTimer = 0;
             }
         }
