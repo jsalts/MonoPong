@@ -182,6 +182,9 @@ namespace MonoPong
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Z) || Keyboard.GetState().IsKeyDown(Keys.OemSemicolon))
+                SpawnBall();
+
             switch (_gameState)
             {
                 case "game":
