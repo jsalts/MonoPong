@@ -24,8 +24,6 @@ namespace MonoPong
         Texture2D _boost2Texture;
         Paddle _paddleOne;
         Paddle _paddleTwo;
-        int _playerBoostState;
-        int _aiBoostState;
         private int _boost1Offset;
         private int _boost2Offset;
         private Ball _ball;
@@ -92,8 +90,6 @@ namespace MonoPong
             base.Initialize();
 
             _ball.BallSpeed = new Vector2(1, 1);
-            _playerBoostState = 0;
-            _aiBoostState = 0;
             _boost1Offset = (_paddleHeight - _boost1Height) / 2;
             _boost2Offset = (_paddleHeight - _boost2Height) / 2;
             
@@ -146,9 +142,6 @@ namespace MonoPong
                 case "pause":
                     break;
             }
-            
-            //PlayerBoost();
-            //AiBoost();
 
             base.Update(gameTime);
         }
@@ -161,118 +154,10 @@ namespace MonoPong
             _ninjaStar.GameSpeed = tempSpeed;
         }
 
-        /*private void PlayerBoost()
-        {
-            if (_playerBoostState < 0)
-                _playerBoostState++;
-            //Boost 1 Interaction
-            else if (_playerBoostState > 0 && _playerBoostState <= 10)
-            {
-                if (_ball.BallSpeed.X < 0)
-                {
-                    if (_ball.BallPosition.X <= _paddleOne.GetX() + _paddleWidth + _boost1Width + 6 &&
-                        _ball.BallPosition.X >
-                        _paddleOne.GetX() + _paddleWidth + 4 - (_gameSpeed * _ball.BallSpeed.X))
-                    {
-                        if (_ball.BallPosition.Y > _paddleOne.GetY() + _boost1Offset && _ball.BallPosition.Y <
-                            _paddleOne.GetY() + _boost1Offset + _boost1Height)
-                            _ball.BallSpeed.X *= -2f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _paddleOne.GetY() + _boost1Offset &&
-                                 _ball.BallPosition.Y + _ball._ballSize <
-                                 _paddleOne.GetY() + _boost1Offset + _boost1Height)
-                            _ball.BallSpeed.X *= -2f;
-                    }
-                }
-
-                _playerBoostState++;
-            }
-            //Boost 2 Interaction
-            else if (_playerBoostState > 10 && _playerBoostState <= 20)
-            {
-                if (_ball.BallSpeed.X < 0)
-                {
-                    if (_ball.BallPosition.X <=
-                        _paddleOne.GetX() + _paddleWidth + _boost1Width + _boost2Width + 10 && _ball.BallPosition.X >
-                        _paddleOne.GetX() + _paddleWidth + _boost1Width + 6 - (_gameSpeed * _ball.BallSpeed.X))
-                    {
-                        if (_ball.BallPosition.Y > _paddleOne.GetY() + _boost2Offset && _ball.BallPosition.Y <
-                            _paddleOne.GetY() + _boost2Offset + _boost2Height)
-                            _ball.BallSpeed.X *= -3f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _paddleOne.GetY() + _boost2Offset &&
-                                 _ball.BallPosition.Y + _ball._ballSize <
-                                 _paddleOne.GetY() + _boost2Offset + _boost2Height)
-                            _ball.BallSpeed.X *= -3f;
-                    }
-                }
-
-                _playerBoostState++;
-            }
-            //Activate Boost Cooldown
-            else if (_playerBoostState > 20)
-                _playerBoostState = -100;
-        }
-
-        private void AiBoost()
-        {
-            if (_aiBoostState < 0)
-                _aiBoostState++;
-            //Boost 1 Interaction
-            else if (_aiBoostState > 0 && _aiBoostState <= 10)
-            {
-                if (_ball.BallSpeed.X > 0)
-                {
-                    if (_ball.BallPosition.X + _ball._ballSize >= _paddleTwo.GetX() - _boost1Width - 4 &&
-                        _ball.BallPosition.X + _ball._ballSize <
-                        _paddleTwo.GetX() - 4 + (_gameSpeed * _ball.BallSpeed.X))
-                    {
-                        if (_ball.BallPosition.Y > _paddleTwo.GetY() + _boost1Offset &&
-                            _ball.BallPosition.Y < _paddleTwo.GetY() + _boost1Offset + _boost1Height)
-                            _ball.BallSpeed.X *= -2f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _paddleTwo.GetY() + _boost1Offset &&
-                                 _ball.BallPosition.Y + _ball._ballSize <
-                                 _paddleTwo.GetY() + _boost1Offset + _boost1Height)
-                            _ball.BallSpeed.X *= -2f;
-                    }
-                }
-
-                _aiBoostState++;
-            }
-            //Boost 2 Interaction
-            else if (_aiBoostState > 10 && _aiBoostState <= 20)
-            {
-                if (_ball.BallSpeed.X > 0)
-                {
-                    if (_ball.BallPosition.X + _ball._ballSize >= _paddleTwo.GetX() - _boost1Width - _boost2Width - 10 &&
-                        _ball.BallPosition.X + _ball._ballSize <
-                        _paddleTwo.GetX() - _boost1Width - 6 + (_gameSpeed * _ball.BallSpeed.X))
-                    {
-                        if (_ball.BallPosition.Y > _paddleTwo.GetY() + _boost2Offset &&
-                            _ball.BallPosition.Y < _paddleTwo.GetY() + _boost2Offset + _boost2Height)
-                            _ball.BallSpeed.X *= -3f;
-                        else if (_ball.BallPosition.Y + _ball._ballSize > _paddleTwo.GetY() + _boost2Offset &&
-                                 _ball.BallPosition.Y + _ball._ballSize <
-                                 _paddleTwo.GetY() + _boost2Offset + _boost2Height)
-                            _ball.BallSpeed.X *= -3f;
-                    }
-                }
-
-                _aiBoostState++;
-            }
-            //Activate Boost Cooldown
-            else if (_aiBoostState > 20)
-                _aiBoostState = -100;
-        }*/
-
         private void CheckCollision()
         {
             _paddleOne.CheckCollision(_ball);
             _paddleTwo.CheckCollision(_ball);
-            /*if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && (_ball.GetAngle() + 90) >= _paddleOne.RotationDegrees && (_ball.GetAngle() - 90) <= _paddleOne.RotationDegrees)
-            //if (_ball.BallBox.Intersects(_paddleOne.BoundingBox) && ((_ball.BallSpeed.X < 0 && _paddle      ) || (             &&         ))
-            //_ball.BallSpeed.X = _ball.BallSpeed.X * -1;
-            //if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox) && (_ball.GetAngle() + 90) >= _paddleTwo.RotationDegrees && (_ball.GetAngle() - 90) <= _paddleTwo.RotationDegrees)
-            if (_ball.BallBox.Intersects(_paddleTwo.BoundingBox) && _ball.BallSpeed.X > 0)
-                _ball.BallSpeed.X = _ball.BallSpeed.X * -1;*/
         }
 
         private void HandleKeystrokes()

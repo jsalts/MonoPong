@@ -9,9 +9,7 @@ namespace MonoPong.Components
         public readonly int _ballSize = 25;
         public Texture2D BallTexture { get; set; }
         public float GameSpeed { get; set; }
-
-        public Vector2 BallPosition;
-        
+        public Vector2 BallPosition;       
         public Vector2 BallSpeed;
         public BoundingBox BallBox
         {
@@ -32,12 +30,6 @@ namespace MonoPong.Components
         public void Draw(SpriteBatch spriteBatch)
         {
             spriteBatch.Draw(BallTexture, BallPosition, Color.White);
-        }
-
-        public float GetAngle()
-        {
-            float radian = (float)Math.Atan2(BallSpeed.Y, BallSpeed.X);
-            return radian * (float)(180 / Math.PI);
         }
         
         public void ColorBall(Color color)
@@ -60,21 +52,7 @@ namespace MonoPong.Components
             //Check for right player paddle collision
             var leftX = BallPosition.X;
             var right = BallPosition.X + _ballSize;
-            
-            /*if (right >= aiPaddle.GetX() && right < aiPaddle.GetX() + (GameSpeed * BallSpeed.X))
-            {
-                if (BallPosition.Y > aiPaddle.GetY() && BallPosition.Y < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
-                if (BallPosition.Y + _ballSize > aiPaddle.GetY() && BallPosition.Y + _ballSize < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
-            }
-            //Check for left player paddle collision
-            if (leftX <= playerPaddle.GetX() + paddleWidth && leftX > playerPaddle.GetX() + paddleWidth + (GameSpeed * BallSpeed.X))
-            {
-                if (BallPosition.Y > playerPaddle.GetY() && BallPosition.Y < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
-                if (BallPosition.Y + _ballSize > playerPaddle.GetY() && BallPosition.Y + _ballSize < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
-            }
-            */
-            
-
+           
             //Check for bottom collision
             if (BallPosition.Y + _ballSize > 480)
             {

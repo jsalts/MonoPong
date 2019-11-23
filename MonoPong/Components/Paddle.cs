@@ -141,12 +141,12 @@ namespace MonoPong.Components
 
             if (upPressed)
             {
-                MovePaddle(-1 * GameSpeed);
+                MovePaddle(-1.5f * GameSpeed);
             }
 
             if (downPressed)
             {
-                MovePaddle(1 * GameSpeed);
+                MovePaddle(1.5f * GameSpeed);
             }
 
             if (boostPressed && _boostState == 0)
