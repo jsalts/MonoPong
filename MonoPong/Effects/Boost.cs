@@ -21,7 +21,7 @@ namespace MonoPong.Effects
         public Boost(Paddle paddle, float xPos, float yPos, int width, int height, int rotationDegrees)
         {
             RotationDegrees = rotationDegrees;
-            _relativePosition = new Vector2(xPos, paddle.GetPosition().Y);
+            _relativePosition = new Vector2(xPos, 0);
             _paddle = paddle;
             _boostSizeX = width;
             _boostSizeY = height;
@@ -51,9 +51,13 @@ namespace MonoPong.Effects
                 }
                 else if (RotationDegrees == 180)
                 {
-//                    var rotatedX = (_relativePosition.X * Math.Cos(RotationDegrees) - (_relativePosition.Y * Math.Sin(RotationDegrees)));
-//                    topLeft = new Vector3((float)rotatedX - _boostSizeX, _relativePosition.Y, 0);
-//                    botRight = new Vector3((float)rotatedX,_relativePosition.Y + _boostSizeY, 0);
+                    var left = BoostPosition.X - _boostSizeX / 2f;
+                    var top = BoostPosition.Y - _boostSizeY / 2f;
+                    var right = BoostPosition.X + _boostSizeX / 2f;
+                    var bottom = BoostPosition.Y + _boostSizeY / 2f;
+
+                    topLeft = new Vector3(left, top, 0) - new Vector3(_relativePosition, 0) * 2;
+                    botRight = new Vector3(right, bottom, 0) - new Vector3(_relativePosition, 0) * 2;
                 }
                 return new BoundingBox(topLeft, botRight);
             }
