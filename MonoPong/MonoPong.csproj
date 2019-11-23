@@ -42,10 +42,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Components\NinjaStar.cs" />
     <Compile Include="Effects\Boost.cs" />
-    <Compile Include="Game1.cs" />
-    <Compile Include="Player\Ball.cs" />
-    <Compile Include="Player\Paddle.cs" />
+    <Compile Include="MonoPong.cs" />
+    <Compile Include="Components\Ball.cs" />
+    <Compile Include="Components\Paddle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

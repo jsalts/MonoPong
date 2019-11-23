@@ -1,32 +1,27 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
+using MonoPong.Components;
 
 namespace MonoPong.Effects
 {
     public class Boost
     {
+        public float RotationDegrees { get; set; }
 
-        public Vector2 _boostPosition;
-        public int _boostSizeX;
-        public int _boostSizeY;
-        public float _boostMultiplier;
+        private readonly Vector2 _boostPosition;
+        private readonly int _boostSizeX;
+        private readonly int _boostSizeY;
         public Texture2D BoostTexture { get; set; }
-        public bool _boostActive;
+        private bool _boostActive;
 
-
-        public Boost(int xPos, int yPos, int xSize, int ySize, float multi)
+        public Boost(float xPos, float yPos, int xSize, int ySize, int rotationDegrees)
         {
+            RotationDegrees = rotationDegrees;
             _boostPosition = new Vector2(xPos, yPos);
             _boostSizeX = xSize;
             _boostSizeY = ySize;
-            _boostMultiplier = multi;
             _boostActive = false;
-        }
-
-        public Vector2 GetPosition()
-        {
-            return _boostPosition;
         }
 
         public void SetColor(Color color)
@@ -39,12 +34,7 @@ namespace MonoPong.Effects
 
             BoostTexture.SetData(colorData);
         }
-
-        public void Move(float xSpeed, float ySpeed)
-        {
-            _boostPosition.X += xSpeed;
-            _boostPosition.Y += ySpeed;
-        }
+        
         public bool Status()
         {
             return _boostActive;
@@ -59,9 +49,18 @@ namespace MonoPong.Effects
             _boostActive = false;
         }
 
-        public void Draw(SpriteBatch spriteBatch)
+        public void Draw(SpriteBatch spriteBatch, Paddle paddle)
         {
-            spriteBatch.Draw(BoostTexture, GetPosition(), Color.White);
+            spriteBatch.Draw(
+                BoostTexture, 
+                paddle.GetPosition(), 
+                null, 
+                Color.White, 
+                RotationDegrees * (float)Math.PI / 180,
+                -_boostPosition, 
+                1, 
+                SpriteEffects.None, 
+                1);
         }
     }
 }

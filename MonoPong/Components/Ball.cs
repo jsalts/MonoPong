@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace MonoPong.Player
+namespace MonoPong.Components
 {
     public class Ball
     {
@@ -12,7 +12,7 @@ namespace MonoPong.Player
         public Vector2 BallPosition;
         
         public Vector2 BallSpeed;
-
+        
         public Ball(Vector2 ballPosition)
         {
             BallPosition = ballPosition;
@@ -41,13 +41,16 @@ namespace MonoPong.Player
             BallPosition.Y += BallSpeed.Y * GameSpeed;
 
             //Check for right player paddle collision
-            if (BallPosition.X + _ballSize >= aiPaddle.GetX() && BallPosition.X + _ballSize < aiPaddle.GetX() + (GameSpeed * BallSpeed.X))
+            var leftX = BallPosition.X;
+            var right = BallPosition.X + _ballSize;
+            
+            if (right >= aiPaddle.GetX() && right < aiPaddle.GetX() + (GameSpeed * BallSpeed.X))
             {
                 if (BallPosition.Y > aiPaddle.GetY() && BallPosition.Y < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
                 if (BallPosition.Y + _ballSize > aiPaddle.GetY() && BallPosition.Y + _ballSize < aiPaddle.GetY() + paddleHeight) BallSpeed.X = -1;
             }
             //Check for left player paddle collision
-            if (BallPosition.X <= playerPaddle.GetX() + paddleWidth && BallPosition.X > playerPaddle.GetX() + paddleWidth + (GameSpeed * BallSpeed.X))
+            if (leftX <= playerPaddle.GetX() + paddleWidth && leftX > playerPaddle.GetX() + paddleWidth + (GameSpeed * BallSpeed.X))
             {
                 if (BallPosition.Y > playerPaddle.GetY() && BallPosition.Y < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
                 if (BallPosition.Y + _ballSize > playerPaddle.GetY() && BallPosition.Y + _ballSize < playerPaddle.GetY() + paddleHeight) BallSpeed.X = 1;
@@ -63,11 +66,11 @@ namespace MonoPong.Player
                 BallSpeed.Y = 1;
             }
             
-            if (BallPosition.X < 0)
+            if (leftX < 0)
             {
                 BallSpeed.X *= -1;
             }
-            if (BallPosition.X + _ballSize > graphicsDevice.Viewport.Width)
+            if (right > graphicsDevice.Viewport.Width)
             {
                 BallSpeed.X *= -1;
             }

@@ -1,40 +1,71 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoPong.Effects;
 
-namespace MonoPong.Player
+namespace MonoPong.Components
 {
     /// <summary>
     /// This is the main type for your game.
     /// </summary>
     public class Paddle
     {
+        public float RotationDegrees
+        {
+            get { return _rotationDegrees; }
+            set
+            {
+                if (_boost1 != null)
+                {
+                    _boost1.RotationDegrees = value;
+                    _boost2.RotationDegrees = value;
+                }
+
+                _rotationDegrees = value;
+            }
+        }
+
         private int _paddleWidth = 21;
         private int _paddleHeight = 101;
         private readonly List<Keys> _upKeys = new List<Keys>();
         private readonly List<Keys> _downKeys = new List<Keys>();
         private readonly List<Keys> _boostKeys = new List<Keys>();
+        private readonly List<Keys> _rotateKeys = new List<Keys>();
         private Vector2 _paddlePosition;
         private float _gameSpeed = 1f;
 
         private Texture2D _paddleTexture;
-        private Boost _boost1;
-        private Boost _boost2;
+        private readonly Boost _boost1;
+        private readonly Boost _boost2;
         private int _boost1Width = 12;
         private int _boost1Height = 50;
         private int _boost2Width = 10;
         private int _boost2Height = 26;
         private int _boostState;
+        private float _rotationDegrees;
 
-        public Paddle(int x, int y)
+        public Paddle(float x, float y, int rotationDegrees)
         {
             _paddlePosition = new Vector2(x, y);
-            _boost1 = new Boost(x + _paddleWidth + 4,y + ((_paddleHeight - _boost1Height) / 2), _boost1Width, _boost1Height, 2f);
-            _boost2 = new Boost(x + _paddleWidth + 8 + _boost1Width, y + ((_paddleHeight - _boost2Height) / 2), _boost2Width, _boost2Height, 3f);
-            _boostState = 0;
+            
+            RotationDegrees = rotationDegrees;
+
+            _boost1 = new Boost(
+                _paddleWidth + 4,
+                (_paddleHeight - _boost1Height) / 2f,
+                _boost1Width,
+                _boost1Height,
+                rotationDegrees);
+
+            _boost2 = new Boost(
+                _paddleWidth + 8 + _boost1Width,
+                (_paddleHeight - _boost2Height) / 2f,
+                _boost2Width,
+                _boost2Height,
+                rotationDegrees);
         }
 
         public float GameSpeed
@@ -52,9 +83,15 @@ namespace MonoPong.Player
         {
             _downKeys.Add(key);
         }
+
         public void AddBoostKeys(Keys key)
         {
             _boostKeys.Add(key);
+        }
+
+        public void AddRotateKeys(Keys key)
+        {
+            _rotateKeys.Add(key);
         }
 
         public float GetX()
@@ -67,7 +104,7 @@ namespace MonoPong.Player
             return _paddlePosition.Y;
         }
 
-        private Vector2 GetPosition()
+        public Vector2 GetPosition()
         {
             return _paddlePosition;
         }
@@ -80,8 +117,6 @@ namespace MonoPong.Player
                 ySpeed = 380 - _paddlePosition.Y;
 
             _paddlePosition.Y += ySpeed;
-            _boost1.Move(0, ySpeed);
-            _boost2.Move(0, ySpeed);
         }
 
         public void HandleKeystrokes()
@@ -89,6 +124,7 @@ namespace MonoPong.Player
             var upPressed = _upKeys.Any(x => Keyboard.GetState().IsKeyDown(x));
             var downPressed = _downKeys.Any(x => Keyboard.GetState().IsKeyDown(x));
             var boostPressed = _boostKeys.Any(x => Keyboard.GetState().IsKeyDown(x));
+            var rotatePressed = _rotateKeys.Any(x => Keyboard.GetState().IsKeyDown(x));
 
             if (upPressed)
             {
@@ -104,29 +140,45 @@ namespace MonoPong.Player
             {
                 _boostState = 1;
             }
+
+            if (rotatePressed)
+            {
+                RotationDegrees += 1 % 360;
+            }
         }
 
-        public void SetColor(Color color)
+        private void SetColor(Color color)
         {
             Color[] paddleColorData = new Color[_paddleWidth * _paddleHeight];
             for (int i = 0; i < _paddleWidth * _paddleHeight; i++)
             {
                 paddleColorData[i] = color;
             }
+
             _paddleTexture.SetData(paddleColorData);
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(_paddleTexture, GetPosition(), Color.White);
+            spriteBatch.Draw(
+                _paddleTexture,
+                GetPosition(),
+                null,
+                Color.White,
+                RotationDegrees * (float) Math.PI / 180,
+                new Vector2(0, 0),
+                1,
+                SpriteEffects.None,
+                1);
+
             if (_boost1.Status())
             {
-                _boost1.Draw(spriteBatch);
+                _boost1.Draw(spriteBatch, this);
             }
 
             if (_boost2.Status())
             {
-                _boost2.Draw(spriteBatch);
+                _boost2.Draw(spriteBatch, this);
             }
         }
 
@@ -143,12 +195,10 @@ namespace MonoPong.Player
             //Set up Boost 2
             _boost2.BoostTexture = new Texture2D(graphicsDevice, _boost2Width, _boost2Height);
             _boost2.SetColor(Color.CornflowerBlue);
-
         }
 
         public void Initialize()
         {
-
         }
 
         public void ManageBoost()
