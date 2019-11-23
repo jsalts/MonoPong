@@ -20,6 +20,7 @@ namespace MonoPong
 
         SpriteBatch _spriteBatch;
         SpriteFont _pauseText;
+        SpriteFont _scoreText;
         Texture2D _boost1Texture;
         Texture2D _boost2Texture;
         Paddle _paddleOne;
@@ -102,6 +103,7 @@ namespace MonoPong
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             _pauseText = Content.Load<SpriteFont>("PauseText");
+            _scoreText = Content.Load<SpriteFont>("ScoreText");
 
             // TODO: use this.Content to load your game content here
         }
@@ -273,7 +275,9 @@ namespace MonoPong
                     _spriteBatch.DrawString(_pauseText, "GAME OVER", new Vector2(120, 120), Color.White);
                     _spriteBatch.DrawString(_pauseText, "Z to Retry", new Vector2(200, 250), Color.White);
                 }
-                _spriteBatch.DrawString(_pauseText, _balls.Count.ToString(), new Vector2(0, 0), Color.White);
+                //Draw Top Status
+                _spriteBatch.DrawString(_scoreText, "Score: " + "000", new Vector2(10, 0), Color.White);
+                _spriteBatch.DrawString(_scoreText, "Balls: " + _balls.Count.ToString(), new Vector2(620, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
                 _paddleTwo.Draw(_spriteBatch);
                 

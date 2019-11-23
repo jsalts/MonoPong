@@ -20,3 +20,10 @@
 /processorParam:TextureFormat=Compressed
 /build:PauseText.spritefont
 
+#begin ScoreText.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:ScoreText.spritefont
+
