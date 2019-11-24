@@ -56,6 +56,7 @@ namespace MonoPong
             //_ninjaStar = new NinjaStar(new Vector2(viewPortWidth / 2f, viewPortHeight / 2f));
             
             _paddleOne = new Paddle(20, viewPortHeight / 2f, 0);
+            _paddleOne.SetScreenSize(viewPortWidth, viewPortHeight);
             _paddleOne.AddUpKeys(Keys.W);
             _paddleOne.AddUpKeys(Keys.OemComma);
             _paddleOne.AddDownKeys(Keys.O);
@@ -66,6 +67,7 @@ namespace MonoPong
             _paddleOne.Initialize();
 
             _paddleTwo = new Paddle(viewPortWidth - 20, viewPortHeight / 2f, 180);
+            _paddleTwo.SetScreenSize(viewPortWidth, viewPortHeight);
             _paddleTwo.AddUpKeys(Keys.Up);
             _paddleTwo.AddDownKeys(Keys.Down);
             _paddleTwo.AddBoostKeys(Keys.Left);
@@ -181,9 +183,9 @@ namespace MonoPong
             _balls.ForEach(b =>
             {
                 //Check paddle 1
-                int result;
+                float result;
                 result = _paddleOne.CheckCollision(b);
-                if (result >= 2)
+                if (result > 1)
                 {
                     spawn = true;
                 }
@@ -193,7 +195,7 @@ namespace MonoPong
                 }
                 result = _paddleTwo.CheckCollision(b);
                 //check paddle 2
-                if (result >= 2)
+                if (result > 1)
                 {
                     spawn = true;
                 }
@@ -259,6 +261,7 @@ namespace MonoPong
                 y = -1;
             }
             var newBall = new Ball(new Vector2(250, 200));
+            newBall.SetScreenSize(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height);
             newBall.BallSpeed = new Vector2(x, y);
             newBall.BallTexture = new Texture2D(GraphicsDevice, newBall._ballSize, newBall._ballSize);
             newBall.ColorBall(Color.White);

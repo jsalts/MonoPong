@@ -36,6 +36,8 @@ namespace MonoPong.Components
         private readonly List<Keys> _rotateKeys = new List<Keys>();
         private Vector2 _paddlePosition;
         //private float _gameSpeed = 1f;
+        private int _screenWidth;
+        private int _screenHeight;
 
         public BoundingBox BoundingBox
         {
@@ -83,11 +85,11 @@ namespace MonoPong.Components
                 rotationDegrees);
         }
 
-        /*public float GameSpeed
+        public void SetScreenSize(int x, int y)
         {
-            get { return _gameSpeed; }
-            set { _gameSpeed = value; }
-        }*/
+            _screenWidth = x;
+            _screenHeight = y;
+        }
 
         public void AddUpKeys(Keys key)
         {
@@ -109,16 +111,6 @@ namespace MonoPong.Components
             _rotateKeys.Add(key);
         }
 
-        public float GetX()
-        {
-            return _paddlePosition.X;
-        }
-
-        public float GetY()
-        {
-            return _paddlePosition.Y;
-        }
-
         public Vector2 GetPosition()
         {
             return _paddlePosition;
@@ -128,8 +120,8 @@ namespace MonoPong.Components
         {
             if (_paddlePosition.Y - ySpeed <= 0 + (_paddleHeight / 2) && ySpeed < 0)
                 ySpeed = 0 + (_paddleHeight / 2) - _paddlePosition.Y;
-            if (_paddlePosition.Y + ySpeed >= 380 + (_paddleHeight / 2) && ySpeed > 0)
-                ySpeed = 380 + (_paddleHeight / 2) - _paddlePosition.Y;
+            if (_paddlePosition.Y + ySpeed >= _screenHeight - (_paddleHeight / 2) && ySpeed > 0)
+                ySpeed = _screenHeight - (_paddleHeight / 2) - _paddlePosition.Y;
 
             _paddlePosition.Y += ySpeed;
         }
@@ -247,18 +239,18 @@ namespace MonoPong.Components
             }
         }
 
-        public int CheckCollision(Ball ball)
+        public float CheckCollision(Ball ball)
         {
             bool isLeftPaddle = _rotationDegrees == 0;
             bool isRightPaddle = _rotationDegrees == 180;
 
             if (ball.BallBox.Intersects(_boost2.BoundingBox) && _boost2.Status() && (ball.BallSpeed.X < 0 && isLeftPaddle || ball.BallSpeed.X > 0 && isRightPaddle))
             {
-                return 3;
+                return 2;
             }
             else if (ball.BallBox.Intersects(_boost1.BoundingBox) && _boost1.Status() && (ball.BallSpeed.X < 0 && isLeftPaddle || ball.BallSpeed.X > 0 && isRightPaddle))
             {
-                return 2;
+                return 1.5f;
             }
             else if (ball.BallBox.Intersects(BoundingBox) && (ball.BallSpeed.X < 0 && isLeftPaddle || ball.BallSpeed.X > 0 && isRightPaddle))
             {

@@ -11,6 +11,8 @@ namespace MonoPong.Components
         public bool OOB { get; set; }
         public Vector2 BallPosition;       
         public Vector2 BallSpeed;
+        private int _screenWidth;
+        private int _screenHeight;
         public BoundingBox BallBox
         {
             get
@@ -27,6 +29,12 @@ namespace MonoPong.Components
             OOB = false;
             GameSpeed = 1f;
             BallPosition = ballPosition;
+        }
+
+        public void SetScreenSize(int x, int y)
+        {
+            _screenWidth = x;
+            _screenHeight = y;
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -56,7 +64,7 @@ namespace MonoPong.Components
             var right = BallPosition.X + _ballSize;
            
             //Check for bottom collision
-            if (BallPosition.Y + _ballSize > 480)
+            if (BallPosition.Y + _ballSize > _screenHeight)
             {
                 BallSpeed.Y = -1;
             }
