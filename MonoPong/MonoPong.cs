@@ -191,7 +191,7 @@ namespace MonoPong
                 }
                 if (result >= 1)
                 {
-                    b.BallSpeed.X = b.BallSpeed.X * -1 * result;
+                    b.BallSpeed.X = b.BallSpeed.X * -1;
                 }
                 result = _paddleTwo.CheckCollision(b);
                 //check paddle 2
@@ -201,7 +201,7 @@ namespace MonoPong
                 }
                 if (result >= 1)
                 {
-                    b.BallSpeed.X = b.BallSpeed.X * -1 * result;
+                    b.BallSpeed.X = b.BallSpeed.X * -1;
                 }
             });
             return spawn;
