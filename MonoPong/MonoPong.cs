@@ -324,12 +324,12 @@ namespace MonoPong
                 {
                     _spriteBatch.DrawString(_pauseText, "GAME OVER", new Vector2(120, 100), Color.White);
                     _spriteBatch.DrawString(_pauseText, "Z to Retry", new Vector2(200, 210), Color.White);
-                    _spriteBatch.DrawString(_scoreText, "High Score: " + _highScore, new Vector2(250, 340), Color.White);
+                    _spriteBatch.DrawString(_scoreText, "High Score: " + (int)(_highScore/10), new Vector2(250, 340), Color.White);
                     _spriteBatch.DrawString(_scoreText, "Max Balls: " + _maxBalls, new Vector2(300, 400), Color.White);
 
                 }
                 //Draw Top Status
-                _spriteBatch.DrawString(_scoreText, "Score: " + _score, new Vector2(10, 0), Color.White);
+                _spriteBatch.DrawString(_scoreText, "Score: " + (int)(_score/10), new Vector2(10, 0), Color.White);
                 _spriteBatch.DrawString(_scoreText, "Speed: " + _gameSpeed, new Vector2(350, 0), Color.White);
                 _spriteBatch.DrawString(_scoreText, "Balls: " + _balls.Count.ToString(), new Vector2(620, 0), Color.White);
                 _paddleOne.Draw(_spriteBatch);
